@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Trip Details{% endblock %}
+{% block central_title %} Trip Details {% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-4"> 
+    <div class="bg-white rounded-md shadow-md p-4 overflow-y-auto trip-details"> 
+        <h2 class="text-2xl font-bold mb-4">Trip Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <p class="text-gray-700">
+                    <i class="material-icons">location_on</i>
+                    <strong>Departure City:</strong> {{ trip.departure_city }}
+                </p>
+                <p class="text-gray-700">
+                    <i class="material-icons">location_on</i>
+                    <strong>Destination City:</strong> {{ trip.destination_city }}
+                </p>
+            </div>
+            <div>
+                <p class="text-gray-700">
+                    <i class="material-icons">calendar_today</i>
+                    <strong>Start Date:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}
+                </p>
+                <p class="text-gray-700">
+                    <i class="material-icons">calendar_today</i>
+                    <strong>End Date:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}
+                </p>
+            </div>
+        </div>
+        <div>
+            <p class="text-gray-700">
+                <i class="material-icons">local_laundry_service</i>
+                <strong>Laundry Service Available:</strong> {{ trip.laundry_service_available }}
+            </p>
+            <p class="text-gray-700">
+                <i class="material-icons">laptop_mac</i>
+                <strong>Working Remotely:</strong> {{ trip.working_remotely }}
+            </p>
+        </div>
+        <form id="generate_checklist_button" class="mt-4" method="POST"
+            action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id)}}">
+            <input type="hidden" name="trip_id" value="{{ trip.id }}">
+            <button id="generate_checklist_button"
+                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit">Generate Checklist</button>
+        </form>
+    </div>
+    <div class="overflow-y-auto checklist"> 
+        <div class="space-y-4">
+            {% for checklist in checklists %}
+            <div class="bg-white-400 rounded-md shadow-md p-4">
+                <h3 class="text-xl font-bold mb-4 cursor-pointer" data-accordion-toggle="checklist-{{ checklist.id }}">
+                    Checklist - {{ checklist.name }}
+                </h3>
+                <div id="checklist-{{ checklist.id }}" class="accordion-content mt-4">
+                    {% for checklist_group in checklist.checklist_groups %}
+                    <div class="bg-gray-200 rounded-md shadow-md p-4 mt-4">
+                        <h4 class="text-lg font-bold mb-4">{{checklist_group.name }}</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left table-auto">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2">Item</th>
+                                        <th class="px-4 py-2">Quantity</th>
+                                        <th class="px-4 py-2">Metadata</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in checklist_group.contents %}
+                                    <tr>
+                                        <td class="px-4 py-2"><a
+                                                href="{{ url_for('item_repository.item', item_id=item.id) }}">{{item.name}}</a>
+                                        </td>
+                                        <td class="px-4 py-2">{{ item.quantity }}</td>
+                                        <td class="px-4 py-2">{{ item.metadata }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if checklist.misc_information %}
+                    <div class="bg-gray-200 rounded-md shadow-md p-4 mt-4">
+                        <h4 class="text-lg font-bold mb-4">Misc Information</h4>
+                        <ul class="list-disc pl-6">
+                            {% for info in checklist.misc_information %}
+                            <li class="py-2">{{ info }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+const generateChecklistButton = document.getElementById('generate_checklist_button');
+
+generateChecklistButton.addEventListener('click', () => {
+    const form = document.getElementById('generate_checklist_button');
+    form.submit();
+});
+
+// Accordion functionality
+const accordionToggles = document.querySelectorAll('[data-accordion-toggle]');
+accordionToggles.forEach(toggle => {
+    toggle.addEventListener('click', () => {
+        const accordionContentId = toggle.dataset.accordionToggle;
+        const accordionContent = document.getElementById(accordionContentId);
+        accordionContent.classList.toggle('hidden');
+    });
+});
+</script>
+{% endblock %}

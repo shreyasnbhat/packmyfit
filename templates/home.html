@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block central_title %}
+    Trip Manager
+{% endblock %}
+
+{% block content %}
+    <div class="full-screen-image" style="background-image: url('{{ url_for('static', filename='home/homepage.png') }}'); background-size: cover; background-position: center; padding: 100px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6 offset-m3 center">
+                    <h1 style="color: white; font-size: 4rem;">Tired of Packing Stress?</h1>
+                    <h2 style="color: white; font-size: 3rem;">Let Us Help!</h2>
+                    <p style="color: white; font-size: 1.5rem;">Say goodbye to packing anxiety and hello to stress-free travel!</p>
+                    <a href="{{url_for('signup')}}" class="btn waves-effect waves-light center" style="background-color: #DC6D48; color: white;">Sign Up Now</a>
+                    <p style="color: white; font-size: 1.2rem;">Already have an account? <a href="{{url_for('login')}}" style="color: white;">Log In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <h2 class="center">Introducing Your Personalized Trip Checklist App</h2>
+                        <p class="center">
+                            Our app takes the hassle out of trip planning by generating personalized checklists based on your belongings. 
+                        </p>
+                        <h3 class="center">Here's how it works:</h3>
+                        <ul class="center">
+                            <li><strong>Add Your Items:</strong> Create a digital inventory of everything you own, from clothes to electronics to toiletries.</li>
+                            <li><strong>Plan Your Trip:</strong> Tell us where you're going, when you're going, and any special considerations (like laundry access or remote work).</li>
+                            <li><strong>Get Your Checklist:</strong> Our app uses advanced technology to analyze your items and trip details, generating a comprehensive checklist tailored to your needs.</li>
+                        </ul>
+                        <h3 class="center">Benefits:</h3>
+                        <ul class="center">
+                            <li><strong>Never Forget Anything:</strong>  Avoid leaving essential items behind with our detailed checklists.</li>
+                            <li><strong>Pack Smarter, Not Harder:</strong>  Pack only what you need, saving space and time.</li>
+                            <li><strong>Reduce Travel Stress:</strong>  Feel confident and prepared for your trip, knowing you have everything you need.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

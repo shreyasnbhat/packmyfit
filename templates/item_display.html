@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Item Details{% endblock %}
+{% block central_title %} Item Details {% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row">
+    <div class="w-full md:w-1/2 p-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <div>
+                        <p class="text-lg font-bold">Name</p>
+                        <p>{{item.name}}</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-lg font-semibold">Brand</p>
+                        <p>{{ item.brand }}</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-lg font-semibold">Colors</p>
+                        <p>{{ item.colors }}</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-lg font-semibold">Care Instructions</p>
+                        <p>{{ item.care_instruction }}</p>
+                    </div>
+
+                    <div class="container mx-auto p-8">
+                        <p class="text-lg font-semibold mb-2">Material</p>
+                        {% if materials %}
+                        {% for material in materials %}
+                        <div class="flex items-center mb-2">
+                            <span class="w-32 text-gray-700">{{ material.name }}</span>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ material.percentage }}%">
+                                </div>
+                            </div>
+                            <span class="w-8 text-right">{{ material.percentage }}%</span>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    {% if metadata %}
+                    <div class="mt-4">
+                        <p class="text-lg font-semibold">Metadata</p>
+                        <p>{{ metadata }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 flex space-x-4"> 
+                        <form method="POST" action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}">
+                            <label for="generate-metadata" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-48">
+                                <span class="mr-2">✨</span> Add Metadata
+                                <input type="submit" id="generate-metadata" class="hidden">
+                            </label>
+                        </form>
+
+                        <form method="POST" enctype="multipart/form-data"
+                            action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}" >
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <label for="image" class="cursor-pointer bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-48"> 
+                                <span class="mr-2">+</span> Add Image
+                                <input type="file" name="image" id="image" class="hidden">
+                            </label>
+                        </form>
+                    </div>
+
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        <span class="text-lg font-semibold">Quantity:</span> {{ item.quantity }}
+                    </p>
+                    <p class="text-gray-700">
+                        <span class="text-lg font-semibold">Comments:</span> {{ item.comments }}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 p-4">         
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+            {% if primary_image_path %}
+            <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                <a href="{{ url_for('static', filename=primary_image_path) }}" data-lightbox="image-gallery">
+                    <img src="{{ url_for('static', filename=primary_image_path) }}" class="w-full rounded-lg"
+                        alt="{{ primary_image_path }}">
+                </a>
+            </div>
+            {% endif %}
+            
+            {% for item_image in item.images %}
+            <div class="col-span-1">
+                <a href="{{ url_for('static', filename=item_image.path) }}" data-lightbox="image-gallery">
+                    <img src="{{ url_for('static', filename=item_image.path) }}" class="w-full rounded-lg"
+                        alt="{{ item_image.path }}">
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Include lightbox CSS & JS. You can host these yourself or use a CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Trip Manager{% endblock %}
+{% block central_title %} Trip Manager {% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row">
+    <div class="w-full md:w-1/2 px-4 py-8">
+        <div class="card form-card">
+            <div class="card-content">
+                <span class="card-title">Add a new Trip</span>
+                <form id="trip-params-form" class="row" method="POST" action="{{ url_for('trip_manager.trips') }}">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div class="mb-6">
+                            <label for="departure_city" class="block text-gray-700 text-sm font-bold mb-2">Departure
+                                City:</label>
+                            <input type="text" id="departure_city" name="departure_city" value="" required
+                                class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                        </div>
+                        <div class="mb-6">
+                            <label for="destination_city" class="block text-gray-700 text-sm font-bold mb-2">Destination
+                                City:</label>
+                            <input type="text" id="destination_city" name="destination_city" value="" required
+                                class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                        </div>
+                        <div class="mb-4">
+                            <label for="start_date" class="block text-gray-700 text-sm font-bold mb-2">Start
+                                Date:</label>
+                            <input type="date" id="start_date" name="start_date" value="" required
+                                class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                        </div>
+                        <div class="mb-4">
+                            <label for="end_date" class="block text-gray-700 text-sm font-bold mb-2">End
+                                Date:</label>
+                            <input type="date" id="end_date" name="end_date" value="" required
+                                class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                        </div>
+                        <div class="mb-4">
+                            <label for="laundry_service_available"
+                                class="block text-gray-700 text-sm font-bold mb-2">Laundry Service
+                                Available:</label>
+                            <select id="laundry_service_available" name="laundry_service_available" required
+                                class="form-select appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                                <option value="" disabled selected>Choose your option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="working_remotely" class="block text-gray-700 text-sm font-bold mb-2">Working
+                                Remotely:</label>
+                            <select id="working_remotely" name="working_remotely" required
+                                class="form-select appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                                <option value="" disabled selected>Choose your option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="itinerary" class="block text-gray-700 text-sm font-bold mb-2">Rough
+                                Itinerary:</label>
+                            <input type="text" id="itinerary" name="itinerary" value="" required
+                                class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
+                        </div>
+                    </div>
+                    <button id="add_trip_button" class="btn waves-effect waves-light" type="submit">Add Trip</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 px-4 py-8">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title text-xl font-bold"> Your Trips</span>
+                <ul class="collection">
+                    {% for trip in trips %}
+                    <li class="collection-item">
+                        <div class="flex justify-between">
+                            <a href="{{ url_for('trip_manager.trip', trip_id=trip.id) }}">
+                                {{ trip.departure_city }} to {{ trip.destination_city }} Dates: {{ trip.start_date.strftime('%Y-%m-%d') }} -> {{
+                                trip.end_date.strftime('%Y-%m-%d') }}
+                            </a>
+                            <form method="POST" action="{{ url_for('trip_manager.delete_trip', trip_id=trip.id) }}">
+                                <button type="submit" class="btn-floating btn-small waves-effect waves-light red">
+                                    <i class="material-icons">delete</i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const addTripButton = document.getElementById('add_trip_button');
+    generateChecklistButton.addEventListener('click', () => {
+        const form = document.getElementById('trip-params-form');
+        form.submit();
+    });
+</script>
+{% endblock %}

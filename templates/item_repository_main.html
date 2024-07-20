@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Item Repository{% endblock %}
+{% block central_title %} Item Repository {% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-wrap -mx-4">
+        {% for category, items in category_to_items.items() %}
+        <div class="w-full px-4 mb-8">
+            <h2 class="text-2xl font-bold mb-4">{{ category }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for item in items %}
+                <div class="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transform hover:-translate-y-1 transition duration-200 ease-in-out">
+                    <a href="{{ url_for('item_repository.item', item_id=item.id) }}">
+                        <div class="flex items-center">
+                            <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                                {% if item.images %}
+                                <img src="{{ url_for('static', filename=item.primary_image) }}" alt="{{ item.primary_image }}"
+                                    class="object-cover w-full h-full">
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">{{ item.name }}</h3>
+                                <p class="text-gray-600 text-sm">{{ item.brand }}</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="mt-4">
+                        <ul class="text-sm">
+                            <li><strong>Colors:</strong> {{ item.colors }}</li>
+                            <li><strong>Quantity:</strong> {{ item.quantity }}</li>
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<button class="fixed bottom-4 right-4 bg-red-500 hover:bg-red-600 text-white text-2xl font-bold rounded-full p-4 shadow-lg" 
+        onclick="openModal()">
+    +
+</button>
+
+<div id="itemModal" class="fixed inset-0 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2">
+        <h2 class="text-2xl font-bold mb-6">Add New Item</h2>
+        <form method="POST" action="{{ url_for('item_repository.items') }}" enctype="multipart/form-data">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4 relative">
+                    <label for="category" class="block text-gray-700 font-bold mb-2">Category:</label>
+                    <select 
+                      id="category" 
+                      name="category"
+                      class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      required
+                    >
+                      <option value="" disabled selected>Choose a category</option> 
+                      <option value="Clothes">Clothes</option>
+                      <option value="Footwear">Footwear</option>
+                      <option value="Luggage">Luggage</option>
+                      <option value="Tech">Tech</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                      <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                  </div>
+                
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 font-bold mb-2">Name:</label>
+                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="brand" class="block text-gray-700 font-bold mb-2">Brand:</label>
+                    <input type="text" id="brand" name="brand" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="colors" class="block text-gray-700 font-bold mb-2">Colors (comma-separated):</label>
+                    <input type="text" id="colors" name="colors" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="quantity" class="block text-gray-700 font-bold mb-2">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" min="0" required>
+                </div>
+                <div class="mb-4">
+                    <label for="comments" class="block text-gray-700 font-bold mb-2">Comments:</label>
+                    <textarea id="comments" name="comments" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="care_instructions" class="block text-gray-700 font-bold mb-2">Care Instructions:</label>
+                    <textarea id="care_instructions" name="care_instructions" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="images" class="block text-gray-700 font-bold mb-2">Images:</label>
+                    <input type="file" id="images" name="images" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Add Item
+                </button>
+                <button type="button" onclick="closeModal()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('itemModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('itemModal').classList.add('hidden');
+    }
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        let modal = document.getElementById('itemModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+{% endblock %}

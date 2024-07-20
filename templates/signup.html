@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+{% block central_title %} Trip Manager {% endblock %}
+
+{% block content %}
+<div class="full-screen-image"
+    style="background-image: url('{{ url_for('static', filename='home/homepage.png') }}'); background-size: cover; background-position: center; padding: 100px 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m6 offset-m3 l4 offset-l4">
+                <div class="card" style="background-color: rgba(255, 255, 255, 0.8);">
+                    <div class="card-content">
+                        <span class="card-title" style="color: black;">Sign Up</span>
+                        <form method="POST" action="/signup">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="text" id="username" name="username" required style="color: white;">
+                                    <label for="username" style="color: black;">Username</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="email" id="email" name="email" required style="color: white;">
+                                    <label for="email" style="color: black;">Email</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="text" id="display_name" name="display_name" required
+                                        style="color: white;">
+                                    <label for="display_name" style="color: black;">Display Name</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input type="password" id="password" name="password" required style="color: white;">
+                                    <label for="password" style="color: black;">Password</label>
+                                </div>
+                            </div>
+                            <button class="btn waves-effect waves-light" type="submit"
+                                style="background-color: #DC6D48; color: white;">Sign Up</button>
+                            <br><br>
+                            <p style="color: black;">Already have an account? <a href="/login">Log
+                                    In</a></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

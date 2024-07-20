@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        M.AutoInit();
+        var instance = M.Tabs.init(el, options);
+    </script>
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background-color: #f8f8f8;
+            /* Light gray background */
+            color: #333;
+            /* Dark gray text */
+            line-height: 1.6;
+        }
+
+        .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: #f6f6f6;
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .tabs li.tab a {
+            transition: background-color 0.3s ease;
+        }
+
+        .tabs li.tab a:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Checklist Card Styling */
+        .checklist-card {
+            background-color: #e0f2f1;
+            /* Light blue-green */
+        }
+
+        .carousel-item {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .carousel-container {
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .item-details {
+            padding: 20px;
+        }
+
+        .item-details .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .item-details .row {
+            margin-bottom: 10px;
+        }
+
+        .item-details .flow-text {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .item-details .flow-text strong {
+            font-weight: bold;
+        }
+
+        .item-details .flow-text i {
+            margin-right: 5px;
+        }
+
+        .material-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .material-name {
+            font-weight: bold;
+        }
+
+        .material-percentage {
+            width: 100px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .material-percentage-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Navigation Styling */
+        nav {
+            background-color: #DC6D48;
+            /* Orange navigation bar */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            color: #fff;
+            /* White text */
+        }
+
+        nav a:hover {
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            font-weight: 700;
+        }
+
+        .sidenav {
+            background-color: #DC6D48;
+            /* Orange sidenav */
+        }
+
+        .sidenav li a {
+            color: #fff;
+            /* White text */
+        }
+
+        .sidenav li a:hover {
+            background-color: #D84315;
+            /* Darker orange on hover */
+        }
+
+        /* Button Styling */
+        .btn {
+            background-color: #DC6D48;
+            /* Orange button */
+            color: #fff;
+            /* White text */
+        }
+
+        .btn:hover {
+            background-color: #D84315;
+            /* Darker orange on hover */
+        }
+
+        /* Home Page Styling */
+        h1.center {
+            font-size: 3rem;
+        }
+
+        h2.center {
+            font-size: 2rem;
+        }
+
+        p.center {
+            font-size: 1.2rem;
+        }
+
+        h3.center {
+            font-size: 1.5rem;
+        }
+
+        ul.center {
+            font-size: 1.2rem;
+        }
+
+        a.btn.waves-effect.waves-light.center {
+            font-size: 1.2rem;
+        }
+
+        .modal.rounded {
+            border-radius: 10px;
+            /* Adjust the radius as desired */
+        }
+
+        .trip-details {
+            overflow-y: auto;
+        }
+
+        .checklist {
+            overflow-y: auto;
+        }
+
+        /* Optional: Limit maximum height of Trip Details */
+        @media (min-width: 1024px) {
+
+            /* Adjust breakpoint as needed */
+            .trip-details {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="{{ url_for('home') }}" class="brand-logo center">{% block central_title %}{% endblock %}</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="left hide-on-med-and-down">
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('trip_manager.trips') }}"> Trip Manager </a></li>
+                <li><a href="{{ url_for('item_repository.items') }}">Item Repository</a></li>
+                <li><a href="{{ url_for('user_preferences.user_preferences') }}">User Preferences</a></li>
+                {% endif %}
+            </ul>
+            <ul class="right hide-on-med-and-down">
+                {% if current_user.is_authenticated %}
+                <li><a href="#">Welcome, {{ current_user.display_name }}</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <ul class="sidenav" id="mobile-demo">
+        <li><a href="{{ url_for('trip_manager.trips') }}"> Trip Manager </a></li>
+        <li><a href="{{ url_for('item_repository.items') }}">Item Repository</a></li>
+        <li><a href="{{ url_for('user_preferences.user_preferences') }}"> User Preferences </a></li>
+    </ul>
+
+    {% block content %}{% endblock %}
+</body>
+
+</html>

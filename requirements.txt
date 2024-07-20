@@ -1,0 +1,12 @@
+requests
+google-generativeai
+urllib3
+flask
+pandas
+flask_sqlalchemy
+flask_login
+Celery
+redis
+flower
+cProfile
+pstats
