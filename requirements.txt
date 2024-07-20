@@ -8,5 +8,5 @@ flask_login
 Celery
 redis
 flower
-cProfile
-pstats
+memory_profiler
+matplotlib

@@ -8,11 +8,10 @@ import shutil
 import json
 import re
 import subprocess
-from celery import Celery, Task, shared_task
+from celery import Celery, Task
 from utils import generate_item_image_id
 from flask_sqlalchemy import SQLAlchemy
 from collections import defaultdict
-from sqlalchemy import func
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import * # Import all models
@@ -44,10 +43,10 @@ app.config.from_mapping(
 celery_app = celery_init_app(app)
 
 # Configure SQL Alchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  # Use SQLite for simplicity
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['STATIC_FOLDER'] = 'static'
-db.init_app(app)  # Initialize SQLAlchemy with the app
+db.init_app(app)
 
 # Configure Flask-Login
 login_manager = LoginManager(app)
@@ -124,9 +123,7 @@ def populate_database():
     dummy_user.trips.append(dummy_trip)
     db.session.commit()
 
-    # Add Images for a Item Id = 1 of the Dummy User (ID = 1).
     dummy_user_id = dummy_user.id
-    
     image_extensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif"]
     for dummy_item_id in range(1, 100):
         dummy_item_with_images = db.session.get(Item, dummy_item_id)
@@ -446,7 +443,7 @@ def item_image_upload(item_id):
 @item_repository_bp.route('/item_id:<int:item_id>/gen_metadata', methods=['GET', 'POST'])
 @login_required
 def item_generate_metadata(item_id):
-    item = Item.query.get_or_404(item_id)
+    item = db.session.get(Item, item_id)
     if request.method == 'POST':
         expert_result = {}
         if not ENABLE_CELERY:
