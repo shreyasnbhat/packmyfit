@@ -122,6 +122,11 @@
             width: 0%;
             transition: width 0.5s ease;
         }
+
+        .content-container {
+            padding-top: 60px;
+            /* Match navbar height */
+        }
     </style>
 </head>
 
@@ -135,12 +140,12 @@
             <div class="flex items-center">
                 <div class="hidden md:flex space-x-8">
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('trip_manager.trips') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trip
-                        Manager</a>
                     <a href="{{ url_for('item_repository.items') }}"
                         class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Item
                         Repository</a>
+                    <a href="{{ url_for('trip_manager.trips') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trip
+                        Manager</a>
                     <a href="{{ url_for('user_preferences.user_preferences') }}"
                         class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">User
                         Preferences</a>
@@ -162,7 +167,7 @@
                     </div>
                     {% else %}
                     <a href="{{ url_for('auth.login') }}"
-                        class="bg-[#42BA96] hover:bg-[#36a380] text-white font-bold py-2 px-6 rounded-full text-base transition duration-300 ease-in-out">
+                        class="bg-[#42BA96] hover:bg-[#36a380] font-bold py-2 px-6 rounded-full text-base transition duration-300 ease-in-out">
                         Log In
                     </a>
                     {% endif %}
@@ -183,10 +188,10 @@
         <div id="mobile-menu" class="md:hidden bg-white">
             <ul class="py-2 px-4">
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trip
-                        Manager</a></li>
                 <li><a href="{{ url_for('item_repository.items') }}" class="block py-2 px-4 hover:bg-gray-100">Item
                         Repository</a></li>
+                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trip
+                        Manager</a></li>
                 <li><a href="{{ url_for('user_preferences.user_preferences') }}"
                         class="block py-2 px-4 hover:bg-gray-100">User
                         Preferences</a></li>
@@ -206,8 +211,8 @@
         });
     </script>
 
-
-    {% block content %}{% endblock %}
+    <div class="content-container"> {% block content %}{% endblock %}
+    </div>
 </body>
 
 </html>

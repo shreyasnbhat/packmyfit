@@ -1,45 +1,61 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Login{% endblock %}
-{% block central_title %} Trip Manager {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Login{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{{url_for('static', filename='homepage.png')}}');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
 
-{% block content %}
-<div class="flex min-h-screen items-center justify-center bg-gray-100">
-    <div class="bg-white rounded-lg shadow-lg p-10 w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
 
-        <form method="POST" action="{{ url_for('auth.login') }}">
-            <div class="mb-4">
-                <label for="username" class="block text-gray-700 font-bold mb-2">Username:</label>
-                <input type="text" id="username" name="username"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    required>
-            </div>
-            <div class="mb-4">
-                <label for="password" class="block text-gray-700 font-bold mb-2">Password:</label>
-                <input type="password" id="password" name="password"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    required>
-            </div>
-            <div class="flex items-center justify-between mb-4">
+<body>
+
+    <div class="flex min-h-screen items-center justify-center">
+        <div class="login-container p-8 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">{% block central_title %} Trip
+                Manager {% endblock %}</h2>
+
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 font-bold mb-2">Username:</label>
+                    <input type="text" id="username" name="username"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-bold mb-2">Password:</label>
+                    <input type="password" id="password" name="password"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required>
+                </div>
                 <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
                     Login
                 </button>
-                <a href="{{ url_for('auth.signup') }}"
-                    class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-                    Don't have an account? Sign Up
-                </a>
-            </div>
-            <div class="text-center">
-                <p class="text-gray-600 text-sm">Current Users</p>
-                <ul class="list-disc pl-6">
-                    {% for username in usernames %}
-                    <li>{{ username }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </form>
+
+                <div class="text-center mt-6">
+                    <a href="{{ url_for('auth.signup') }}"
+                        class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        Don't have an account? Sign Up
+                    </a>
+                </div>
+                <!-- Removed the display of current users -->
+            </form>
+        </div>
     </div>
-</div>
-{% endblock %}
+
+</body>
+
+</html>
