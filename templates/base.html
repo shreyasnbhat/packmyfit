@@ -4,25 +4,15 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-    <script>
-        M.AutoInit();
-        var instance = M.Tabs.init(el, options);
-    </script>
-
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
             font-family: 'Google Sans', sans-serif;
-            background-color: #f8f8f8;
-            /* Light gray background */
+            background-color: #ededed;
             color: #333;
-            /* Dark gray text */
             line-height: 1.6;
         }
 
@@ -132,130 +122,90 @@
             width: 0%;
             transition: width 0.5s ease;
         }
-
-        /* Navigation Styling */
-        nav {
-            background-color: #DC6D48;
-            /* Orange navigation bar */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        nav a {
-            color: #fff;
-            /* White text */
-        }
-
-        nav a:hover {
-            text-decoration: none;
-        }
-
-        .brand-logo {
-            font-weight: 700;
-        }
-
-        .sidenav {
-            background-color: #DC6D48;
-            /* Orange sidenav */
-        }
-
-        .sidenav li a {
-            color: #fff;
-            /* White text */
-        }
-
-        .sidenav li a:hover {
-            background-color: #D84315;
-            /* Darker orange on hover */
-        }
-
-        /* Button Styling */
-        .btn {
-            background-color: #DC6D48;
-            /* Orange button */
-            color: #fff;
-            /* White text */
-        }
-
-        .btn:hover {
-            background-color: #D84315;
-            /* Darker orange on hover */
-        }
-
-        /* Home Page Styling */
-        h1.center {
-            font-size: 3rem;
-        }
-
-        h2.center {
-            font-size: 2rem;
-        }
-
-        p.center {
-            font-size: 1.2rem;
-        }
-
-        h3.center {
-            font-size: 1.5rem;
-        }
-
-        ul.center {
-            font-size: 1.2rem;
-        }
-
-        a.btn.waves-effect.waves-light.center {
-            font-size: 1.2rem;
-        }
-
-        .modal.rounded {
-            border-radius: 10px;
-            /* Adjust the radius as desired */
-        }
-
-        .trip-details {
-            overflow-y: auto;
-        }
-
-        .checklist {
-            overflow-y: auto;
-        }
-
-        /* Optional: Limit maximum height of Trip Details */
-        @media (min-width: 1024px) {
-
-            /* Adjust breakpoint as needed */
-            .trip-details {
-                max-height: 300px;
-            }
-        }
     </style>
 </head>
 
 <body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="{{ url_for('home') }}" class="brand-logo center">{% block central_title %}{% endblock %}</a>
-            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-            <ul class="left hide-on-med-and-down">
+    <nav class="bg-gray-100 shadow-md fixed w-full z-50 top-0">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="{{ url_for('home') }}" class="text-xl sm:text-2xl font-bold font-serif text-gray-800">
+                Packr
+            </a>
+
+            <div class="flex items-center">
+                <div class="hidden md:flex space-x-8">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('trip_manager.trips') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trip
+                        Manager</a>
+                    <a href="{{ url_for('item_repository.items') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Item
+                        Repository</a>
+                    <a href="{{ url_for('user_preferences.user_preferences') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">User
+                        Preferences</a>
+                    <div class="relative inline-block">
+                        <button
+                            class="inline-flex items-center justify-center px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200"
+                            id="userDropdownButton">
+                            <span class="mr-1">Welcome, {{ current_user.display_name }}</span>
+                            <svg class="w-4 h-4 inline-block fill-current" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            </svg>
+                        </button>
+                        <div class="hidden absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg"
+                            id="userDropdown">
+                            <a href="{{ url_for('auth.logout') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}"
+                        class="bg-[#42BA96] hover:bg-[#36a380] text-white font-bold py-2 px-6 rounded-full text-base transition duration-300 ease-in-out">
+                        Log In
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="md:hidden">
+                    <button type="button" class="text-gray-800 hover:text-gray-600 focus:outline-none"
+                        aria-label="Toggle Navigation" data-target="#mobile-menu">
+                        <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden bg-white">
+            <ul class="py-2 px-4">
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('trip_manager.trips') }}"> Trip Manager </a></li>
-                <li><a href="{{ url_for('item_repository.items') }}">Item Repository</a></li>
-                <li><a href="{{ url_for('user_preferences.user_preferences') }}">User Preferences</a></li>
-                {% endif %}
-            </ul>
-            <ul class="right hide-on-med-and-down">
-                {% if current_user.is_authenticated %}
-                <li><a href="#">Welcome, {{ current_user.display_name }}</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trip
+                        Manager</a></li>
+                <li><a href="{{ url_for('item_repository.items') }}" class="block py-2 px-4 hover:bg-gray-100">Item
+                        Repository</a></li>
+                <li><a href="{{ url_for('user_preferences.user_preferences') }}"
+                        class="block py-2 px-4 hover:bg-gray-100">User
+                        Preferences</a></li>
+                <li><a href="{{ url_for('auth.logout') }}" class="block py-2 px-4 hover:bg-gray-100">Logout</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
-    <ul class="sidenav" id="mobile-demo">
-        <li><a href="{{ url_for('trip_manager.trips') }}"> Trip Manager </a></li>
-        <li><a href="{{ url_for('item_repository.items') }}">Item Repository</a></li>
-        <li><a href="{{ url_for('user_preferences.user_preferences') }}"> User Preferences </a></li>
-    </ul>
+    <script>
+        // Simple JavaScript for the dropdown 
+        const userDropdownButton = document.getElementById('userDropdownButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        userDropdownButton.addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+    </script>
+
 
     {% block content %}{% endblock %}
 </body>

@@ -1,35 +1,30 @@
-from app import app, db, Item, ItemImage
-from celery import shared_task
-from llms import ProductImageToMetadataExpert
 from constants import GEMINI_API_KEY
 import json
-import os
 import re
 from memory_profiler import profile
-
+from models import Item, ItemImage
+from llms import ProductImageToMetadataExpert
+from app import db, celery_app
 
 @profile
-@shared_task(ignore_result=False)
+@celery_app.task(ignore_result=True)
 def generate_product_metadata(item_id):
     """Celery task to generate metadata for an item."""
-    print("Hurrah")
     item = db.session.get(Item, item_id)
     item_image_paths = [
         image.path
         for image in item.images
     ]
 
-    # Initialize the expert with your API key
+    # Initialize the expert.
     product_image_to_metadata_expert = ProductImageToMetadataExpert(
         api_key=GEMINI_API_KEY
     )
-
-    # Generate metadata using the expert
     expert_result = product_image_to_metadata_expert.generate_product_metadata(
         image_paths=item_image_paths
     )
 
-    # Update the item with the generated metadata
+    # Update the item with the generated metadata.
     if "brand" in expert_result and expert_result["brand"] is not None:
         item.brand = expert_result["brand"]
     if "care_instruction" in expert_result:

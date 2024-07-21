@@ -4,42 +4,42 @@
 {% block central_title %} Trip Manager {% endblock %}
 
 {% block content %}
-<div class="full-screen-image"
-    style="background-image: url('{{ url_for('static', filename='home/homepage.png') }}'); background-size: cover; background-position: center; padding: 100px 0;">
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m6 offset-m3 l4 offset-l4">
-                <div class="card" style="background-color: rgba(255, 255, 255, 0.8);">
-                    <div class="card-content">
-                        <span class="card-title" style="color: black;">Login</span>
-                        <form method="POST" action="{{ url_for('login') }}">
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input type="text" id="username" name="username" required>
-                                    <label for="username">Username</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12">
-                                    <input type="password" id="password" name="password" required>
-                                    <label for="password">Password</label>
-                                </div>
-                            </div>
-                            <button class="btn waves-effect waves-light" type="submit">Login</button>
-                            <br><br>
-                            <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
-                            <br><br>
-                            <p>Current Users</p>
-                            <ul>
-                                {% for username in usernames %}
-                                <li>{{ username }}</li>
-                                {% endfor %}
-                            </ul>
-                        </form>
-                    </div>
-                </div>
+<div class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="bg-white rounded-lg shadow-lg p-10 w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6">Login</h2>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 font-bold mb-2">Username:</label>
+                <input type="text" id="username" name="username"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required>
             </div>
-        </div>
+            <div class="mb-4">
+                <label for="password" class="block text-gray-700 font-bold mb-2">Password:</label>
+                <input type="password" id="password" name="password"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+                <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Login
+                </button>
+                <a href="{{ url_for('auth.signup') }}"
+                    class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                    Don't have an account? Sign Up
+                </a>
+            </div>
+            <div class="text-center">
+                <p class="text-gray-600 text-sm">Current Users</p>
+                <ul class="list-disc pl-6">
+                    {% for username in usernames %}
+                    <li>{{ username }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

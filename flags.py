@@ -1,0 +1,3 @@
+ENABLE_CELERY=False
+LLM_TESTING=False
+RE_INIT_DB=False

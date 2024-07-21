@@ -12,7 +12,7 @@
                 <div class="card" style="background-color: rgba(255, 255, 255, 0.8);">
                     <div class="card-content">
                         <span class="card-title" style="color: black;">Sign Up</span>
-                        <form method="POST" action="/signup">
+                        <form method="POST" action="{{url_for('auth.signup')}}">
                             <div class="row">
                                 <div class="input-field col s12">
                                     <input type="text" id="username" name="username" required style="color: white;">
@@ -41,7 +41,7 @@
                             <button class="btn waves-effect waves-light" type="submit"
                                 style="background-color: #DC6D48; color: white;">Sign Up</button>
                             <br><br>
-                            <p style="color: black;">Already have an account? <a href="/login">Log
+                            <p style="color: black;">Already have an account? <a href="{{url_for('auth.login')}}">Log
                                     In</a></p>
                         </form>
                     </div>

@@ -4,6 +4,7 @@ import requests
 import json, re
 import string
 import random
+from models import ItemImage
 
 def download_webpage(url: str, max_retries: int = 3) -> str:
   """Downloads the contents of a webpage and returns the HTML Content.
@@ -37,8 +38,15 @@ def get_json_from_generation(content: str) -> Any:
         raise json.JSONDecodeError("Failed to parse JSON from generation.")
     return json_data
 
-
 def generate_item_image_id():
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(10))
     return random_string
+
+def get_image_path_from_item_image_id(db, item_image_id):
+    image_path = None
+    if item_image_id:
+        item_image = db.session.get(ItemImage, item_image_id)
+        if item_image:
+            image_path = item_image.path
+    return image_path
