@@ -1,6 +1,7 @@
 GEMINI_API_KEY="AIzaSyDuEc50CK1T3dRYfhMx2_-r1igsSd0PY54"
 USER_AGENT_HEADER = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'}
 
+STATIC_FOLDER = 'static'
 IMAGES_UPLOAD_FOLDER = 'items/images'
 
 DUMMY_ITEM_REPOSITORY_PATH="testdata/item_repository.csv"

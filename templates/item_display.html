@@ -4,101 +4,101 @@
 {% block central_title %} Item Details {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">  <!-- Add container for proper spacing -->
-    <div class="flex flex-col md:flex-row">
-        <div class="w-full md:w-1/2 p-4">
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="w-full md:w-1/2">
             <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div>
-                            <p class="text-lg font-bold">Name</p>
-                            <p>{{item.name}}</p>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-lg font-semibold">Brand</p>
-                            <p>{{ item.brand }}</p>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-lg font-semibold">Colors</p>
-                            <p>{{ item.colors }}</p>
-                        </div>
-
-                        <div class="mt-4">
-                            <p class="text-lg font-semibold">Care Instructions</p>
-                            <p>{{ item.care_instruction }}</p>
-                        </div>
-
-                        <div class="container mx-auto p-8">
-                            <p class="text-lg font-semibold mb-2">Material</p>
-                            {% if materials %}
-                            {% for material in materials %}
-                            <div class="flex items-center mb-2">
-                                <span class="w-32 text-gray-700">{{ material.name }}</span>
-                                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ material.percentage }}%">
-                                    </div>
-                                </div>
-                                <span class="w-8 text-right">{{ material.percentage }}%</span>
-                            </div>
-                            {% endfor %}
-                            {% endif %}
-                        </div>
-
-                        {% if metadata %}
-                        <div class="mt-4">
-                            <p class="text-lg font-semibold">Metadata</p>
-                            <p>{{ metadata }}</p>
-                        </div>
+                <div>
+                    <div class="flex items-center mt-2">
+                        <div class="w-16 h-16 rounded-full bg-gray-200 mr-4 overflow-hidden">
+                            {% if primary_image_path %}
+                            <a href="{{ url_for('static', filename=primary_image_path) }}">
+                                <img src="{{ url_for('static', filename=primary_image_path) }}"
+                                    alt="{{ primary_image_path }}" class="w-full h-full object-cover">
+                            </a>
                         {% endif %}
-
-                        <div class="mt-4 flex space-x-4">
-                            <form method="POST"
-                                action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}">
-                                <label for="generate-metadata"
-                                    class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-48">
-                                    <span class="mr-2">✨</span> Add Metadata
-                                    <input type="submit" id="generate-metadata" class="hidden">
-                                </label>
-                            </form>
-
-                            <form method="POST" enctype="multipart/form-data"
-                                action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}">
-                                <input type="hidden" name="item_id" value="{{ item.id }}">
-                                <label for="image"
-                                    class="cursor-pointer bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-48">
-                                    <span class="mr-2">+</span> Add Image
-                                    <input type="file" name="image" id="image" class="hidden">
-                                </label>
-                            </form>
                         </div>
-
+                        <div>
+                            <h2 class="text-3xl font-bold">{{ item.name }}</h2>
+                            <p class="text-gray-600 text-lg mt-2">by {{ item.brand }}</p>
+                        </div>
                     </div>
-                    <div>
+
+
+                    <hr class="my-6 border-t border-gray-300">
+
+                    <div class="mt-4">
+                        <p class="text-xl font-semibold">Description</p>
                         <p class="text-gray-700">
-                            <span class="text-lg font-semibold">Quantity:</span> {{ item.quantity }}
+                            <span class="font-semibold">Quantity:</span> {{ item.quantity }}
                         </p>
                         <p class="text-gray-700">
-                            <span class="text-lg font-semibold">Comments:</span> {{ item.comments }}
+                            <span class="font-semibold">Colors:</span> {{ item.colors }}
                         </p>
+                        <p class="text-gray-700">
+                            <span class="font-semibold">Comments:</span> {{ item.comments }}
+                        </p>
+                    </div>
+
+                    {% if item.care_instruction %}
+                    <hr class="my-6 border-t border-gray-300">
+                    <div class="mt-4">
+                        <p class="text-xl font-semibold">Care Instructions</p>
+                        <p>{{ item.care_instruction }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if materials %}
+                    <hr class="my-6 border-t border-gray-300">
+                    <div class="container mx-auto p-2">
+                        <p class="text-xl font-semibold mb-2">Material</p>
+                        {% for material in materials %}
+                        <div class="flex items-center mb-2">
+                            <span class="w-32 text-gray-700">{{ material.name }}</span>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ material.percentage }}%">
+                                </div>
+                            </div>
+                            <span class="w-8 text-right">{{ material.percentage }}%</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if metadata %}
+                    <hr class="my-6 border-t border-gray-300">
+                    <div class="mt-4">
+                        <p class="text-xl font-semibold">Metadata</p>
+                        <p>{{ metadata }}</p>
+                    </div>
+                    {% endif %}
+
+                    <hr class="my-6 border-t border-gray-300">
+                    <div class="mt-4 flex space-x-4">
+                        <form method="POST"
+                            action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}">
+                            <button type="submit"
+                                class="px-6 py-2 rounded-md font-semibold text-white bg-blue-500 hover:bg-blue-700 transition duration-300">
+                                <span class="mr-2">✨</span> Generate Metadata
+                            </button>
+                        </form>
+                    </div>
+                    <div class="mt-4 flex space-x-4">
+                        <form method="POST" enctype="multipart/form-data"
+                            action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <label for="image"
+                                class="px-6 py-2 rounded-md font-semibold text-white bg-blue-500 hover:bg-blue-700 transition duration-300">
+                                <span class="mr-2">+</span> Upload Image
+                                <input type="file" name="image" id="image" class="hidden">
+                            </label>
+                        </form>
                     </div>
                 </div>
-
             </div>
         </div>
-        <div class="w-full md:w-1/2 p-4">
+        <div class="w-full md:w-1/2">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                {% if primary_image_path %}
-                <div class="col-span-1 md:col-span-2 lg:col-span-1">
-                    <a href="{{ url_for('static', filename=primary_image_path) }}" data-lightbox="image-gallery">
-                        <img src="{{ url_for('static', filename=primary_image_path) }}" class="w-full rounded-lg"
-                            alt="{{ primary_image_path }}">
-                    </a>
-                </div>
-                {% endif %}
-
                 {% for item_image in item.images %}
                 <div class="col-span-1">
                     <a href="{{ url_for('static', filename=item_image.path) }}" data-lightbox="image-gallery">

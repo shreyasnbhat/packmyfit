@@ -1,120 +1,146 @@
 {% extends "base.html" %}
 
 {% block title %}Trip Details{% endblock %}
-{% block central_title %} Trip Details {% endblock %}
+{% block central_title %} Packr: Trip Details {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-4"> 
-    <div class="bg-white rounded-md shadow-md p-4 overflow-y-auto trip-details"> 
-        <h2 class="text-2xl font-bold mb-4">Trip Details</h2>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6"> 
+        <h2 class="text-2xl font-semibold mb-4">Trip Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <p class="text-gray-700">
-                    <i class="material-icons">location_on</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
                     <strong>Departure City:</strong> {{ trip.departure_city }}
                 </p>
                 <p class="text-gray-700">
-                    <i class="material-icons">location_on</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
                     <strong>Destination City:</strong> {{ trip.destination_city }}
                 </p>
             </div>
             <div>
                 <p class="text-gray-700">
-                    <i class="material-icons">calendar_today</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <strong>Start Date:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}
                 </p>
                 <p class="text-gray-700">
-                    <i class="material-icons">calendar_today</i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <strong>End Date:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}
                 </p>
             </div>
         </div>
         <div>
-            <p class="text-gray-700">
-                <i class="material-icons">local_laundry_service</i>
+            <p class="text-gray-700 mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15m-11-11v-5h.582m0 0a8.001 8.001 0 0115.357-2m-15.357 2H15" />
+                </svg>
                 <strong>Laundry Service Available:</strong> {{ trip.laundry_service_available }}
             </p>
             <p class="text-gray-700">
-                <i class="material-icons">laptop_mac</i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 012-2 2 2 0 012 2v6m3-13a2 2 0 012-2 2 2 0 01-2 2m3 5a2 2 0 012-2 2 2 0 01-2 2m3-13a2 2 0 012-2 2 2 0 01-2 2m3 5a2 2 0 012-2 2 2 0 01-2 2" />
+                </svg>
                 <strong>Working Remotely:</strong> {{ trip.working_remotely }}
             </p>
         </div>
-        <form id="generate_checklist_button" class="mt-4" method="POST"
-            action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id)}}">
+        <form id="generate_checklist_form" class="mt-6" method="POST"
+              action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id)}}">
             <input type="hidden" name="trip_id" value="{{ trip.id }}">
             <button id="generate_checklist_button"
-                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit">Generate Checklist</button>
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
+                    type="submit">Generate Checklist</button>
         </form>
     </div>
-    <div class="overflow-y-auto checklist"> 
-        <div class="space-y-4">
-            {% for checklist in checklists %}
-            <div class="bg-white-400 rounded-md shadow-md p-4">
-                <h3 class="text-xl font-bold mb-4 cursor-pointer" data-accordion-toggle="checklist-{{ checklist.id }}">
-                    Checklist - {{ checklist.name }}
-                </h3>
-                <div id="checklist-{{ checklist.id }}" class="accordion-content mt-4">
-                    {% for checklist_group in checklist.checklist_groups %}
-                    <div class="bg-gray-200 rounded-md shadow-md p-4 mt-4">
-                        <h4 class="text-lg font-bold mb-4">{{checklist_group.name }}</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left table-auto">
-                                <thead>
-                                    <tr>
-                                        <th class="px-4 py-2">Item</th>
-                                        <th class="px-4 py-2">Quantity</th>
-                                        <th class="px-4 py-2">Metadata</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in checklist_group.contents %}
-                                    <tr>
-                                        <td class="px-4 py-2"><a
-                                                href="{{ url_for('item_repository.item', item_id=item.id) }}">{{item.name}}</a>
-                                        </td>
-                                        <td class="px-4 py-2">{{ item.quantity }}</td>
-                                        <td class="px-4 py-2">{{ item.metadata }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% if checklist.misc_information %}
-                    <div class="bg-gray-200 rounded-md shadow-md p-4 mt-4">
-                        <h4 class="text-lg font-bold mb-4">Misc Information</h4>
-                        <ul class="list-disc pl-6">
-                            {% for info in checklist.misc_information %}
-                            <li class="py-2">{{ info }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-4">Checklist</h2>
+
+        {% if checklists %}
+        <div class="mb-4">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="checklist-tabs" data-tabs-toggle="#checklist-tabs-content" role="tablist">
+                {% for checklist_group in checklists[0].checklist_groups %}
+                <li class="mr-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-600 dark:hover:text-blue-500 {{ 'border-blue-600 text-blue-600' if loop.index == 1 else 'border-gray-300 text-gray-500' }}" id="checklist-tab-{{ loop.index }}" data-tabs-target="#checklist-{{ loop.index }}" type="button" role="tab" aria-controls="checklist-{{ loop.index }}" aria-selected="{{ 'true' if loop.index == 1 else 'false' }}">{{ checklist_group.name }}</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="checklist-tabs-content">
+            {% for checklist_group in checklists[0].checklist_groups %}
+            <div class="{{ 'block' if loop.index == 1 else 'hidden' }} p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="checklist-{{ loop.index }}" role="tabpanel" aria-labelledby="checklist-tab-{{ loop.index }}">
+                <table class="w-full text-left table-auto">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 text-left">Item</th>
+                            <th class="px-4 py-2 text-left">Quantity</th>
+                            <th class="px-4 py-2 text-left">Metadata</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in checklist_group.contents %}
+                        <tr>
+                            <td class="px-4 py-2 border-t border-gray-200"><a
+                                    href="{{ url_for('item_repository.item', item_id=item.id) }}"
+                                    class="hover:underline">{{item.name}}</a>
+                            </td>
+                            <td class="px-4 py-2 border-t border-gray-200">{{ item.quantity }}</td>
+                            <td class="px-4 py-2 border-t border-gray-200">{{ item.metadata }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
             {% endfor %}
         </div>
+        {% if checklists[0].misc_information %}
+        <div class="mt-6 bg-gray-100 rounded-md shadow-inner p-4">
+            <h4 class="text-lg font-medium mb-2">Misc Information</h4>
+            <ul class="list-disc pl-6">
+                {% for info in checklists[0].misc_information %}
+                <li class="py-2">{{ info }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endif %}
     </div>
+
 </div>
 
 <script>
-const generateChecklistButton = document.getElementById('generate_checklist_button');
+    // Initialize the tabs
+    const tabElements = document.querySelectorAll('[data-tabs-target]');
+    const tabContentElements = document.querySelectorAll('[role="tabpanel"]');
 
-generateChecklistButton.addEventListener('click', () => {
-    const form = document.getElementById('generate_checklist_button');
-    form.submit();
-});
+    tabElements.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove the 'active' class from all tabs
+            tabElements.forEach(t => {
+                t.classList.remove('border-blue-600', 'text-blue-600');
+                t.classList.add('border-gray-300', 'text-gray-500');
+            });
 
-// Accordion functionality
-const accordionToggles = document.querySelectorAll('[data-accordion-toggle]');
-accordionToggles.forEach(toggle => {
-    toggle.addEventListener('click', () => {
-        const accordionContentId = toggle.dataset.accordionToggle;
-        const accordionContent = document.getElementById(accordionContentId);
-        accordionContent.classList.toggle('hidden');
+            // Add the 'active' class to the clicked tab
+            tab.classList.remove('border-gray-300', 'text-gray-500');
+            tab.classList.add('border-blue-600', 'text-blue-600');
+
+            // Hide all tab content elements
+            tabContentElements.forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Show the content of the clicked tab
+            const target = document.querySelector(tab.dataset.tabsTarget);
+            target.classList.remove('hidden');
+        });
     });
-});
 </script>
 {% endblock %}

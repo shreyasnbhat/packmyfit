@@ -12,6 +12,7 @@ auth_blueprint_bp = Blueprint('auth', __name__, url_prefix='/auth')
 from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
+from constants import STATIC_FOLDER
 import json
 import re
 from utils import generate_item_image_id, get_image_path_from_item_image_id
@@ -309,7 +310,7 @@ def item_generate_metadata(item_id):
         expert_result = {}
         if not ENABLE_CELERY:
             # Call the product metadata expert and render item_repository_item with the resulting json.
-            item_image_paths = [os.path.join(app.config['STATIC_FOLDER'], image.path) for image in item.images]
+            item_image_paths = [os.path.join(STATIC_FOLDER, image.path) for image in item.images]
             expert_result = product_image_to_metadata_expert.generate_product_metadata(image_paths=item_image_paths)
         else:
             # Call the Celery task to generate metadata asynchronously.

@@ -1,5 +1,5 @@
 from flask import Flask
-from constants import DUMMY_ITEM_REPOSITORY_PATH, DUMMY_USER_PREFERENCES_PATH, IMAGES_UPLOAD_FOLDER
+from constants import DUMMY_ITEM_REPOSITORY_PATH, DUMMY_USER_PREFERENCES_PATH, IMAGES_UPLOAD_FOLDER, STATIC_FOLDER
 from item_repository_utils import csv_to_dict
 from datetime import datetime
 import os
@@ -12,7 +12,7 @@ from models import *
 
 # Configure Flask App.
 app = Flask(__name__)
-app.config['STATIC_FOLDER'] = 'static'
+app.config['STATIC_FOLDER'] = STATIC_FOLDER
 app.config['IMAGES_UPLOAD_FOLDER'] = IMAGES_UPLOAD_FOLDER
 os.makedirs(IMAGES_UPLOAD_FOLDER, exist_ok=True)
 
