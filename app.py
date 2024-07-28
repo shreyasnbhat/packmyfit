@@ -4,7 +4,6 @@ from utils import item_repository_csv_to_json
 from datetime import datetime, timedelta
 import os
 import shutil
-import subprocess
 from utils import resize_image_to_target
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -71,7 +70,7 @@ def populate_database():
     # Clear all files recursively under static.
     for root, _ , files in os.walk(app.config['STATIC_FOLDER']):
         for file in files:
-            if file != "homepage.png":
+            if file != "homepage.jpg":
                 os.remove(os.path.join(root, file))
         
     # Add a Dummy User.

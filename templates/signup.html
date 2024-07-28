@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         body {
-            background-image: url('{{url_for('static', filename=' homepage.png')}}');
+            background-image: url('{{url_for('static', filename='homepage.jpg')}}');
             background-size: cover;
             background-repeat: no-repeat;
         }
@@ -22,7 +22,7 @@
 
 <body>
     <div class="flex min-h-screen items-center justify-center bg-cover bg-center"
-        style="background-image: url('{{ url_for('static', filename='homepage.png') }}');">
+        style="background-image: url('{{ url_for('static', filename='homepage.jpg') }}');">
         <div class="login-container p-8 rounded-lg shadow-md w-full max-w-md">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Sign Up</h2>
 
