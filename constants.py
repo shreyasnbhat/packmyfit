@@ -1,3 +1,4 @@
+OPEN_WEATHER_API_KEY="91553237797fc77dbd7bc610ea529793"
 GEMINI_API_KEY="AIzaSyDuEc50CK1T3dRYfhMx2_-r1igsSd0PY54"
 USER_AGENT_HEADER = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'}
 
@@ -61,7 +62,7 @@ Input:
 - User Preferences: A list of user preferences, this may contain any details you must keep in mind while preparing the packing list.
 
 Process:		
-- Consider all the Trip Parameters specified by the user. Consider the weather at the destination while making packing list suggestions. 																																															
+- Consider all the Trip Parameters specified by the user. Consider the weather at the destination while making packing list suggestions. Weather information will be provided to you.																																															
 - Analyze Item Repository: Thoroughly examine the items that a user owns. Take item quantities into account as well.																								
 - Consider all User Preferences: Carefully take into account all user preferences while making the checklist. Point it out if some preference is not being met in the misc information section.						
 - Prioritize Essentials: Identify the absolute necessities for the trip, considering the destination, weather, activities, and any special needs.																							
@@ -100,6 +101,16 @@ End Date: YYYY-MM-DD
 Laundry Service Available: True/False
 Working Remotely: True/False
 Itinerary: ....
+
+Weather
++------------+---------+---------------+---------------+--------------+
+|    Date    | Weather | Min Temp (°C) | Max Temp (°C) | Humidity (%) |
++------------+---------+---------------+---------------+--------------+
+| YYYY-MM-DD |  ...... |       20      |       22      |      64      |
+| YYYY-MM-DD |  ...... |       19      |       20      |      67      |
+| YYYY-MM-DD |  ...... |       18      |       18      |      70      |
+| YYYY-MM-DD |  ...... |       22      |       22      |      54      |
++------------+---------+---------------+---------------+--------------+
 
 Item Repository
 <Item id=1, name=XYZ, brand= Brand 1, colors= None, quantity= 1, comments= ..., link= None, category=...>

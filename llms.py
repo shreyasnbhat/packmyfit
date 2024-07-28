@@ -51,7 +51,7 @@ class GeminiFlash(BaseLLM):
 class GeminiPro(BaseLLM):
     model_name = "gemini-1.5-pro"
     
-class TripChecklistExpert(GeminiFlash):
+class TripChecklistExpert(GeminiPro):
     generation_config = {
             "temperature": 0,
             "top_p": 0.95,
@@ -65,14 +65,14 @@ class TripChecklistExpert(GeminiFlash):
     def __init__(self, api_key=None, testing=False) -> None:
         self.testing = testing
         if not testing:
-            GeminiFlash.initialize_model(api_key)
-            self.llm = genai.GenerativeModel(model_name=GeminiFlash.model_name,
+            GeminiPro.initialize_model(api_key)
+            self.llm = genai.GenerativeModel(model_name=GeminiPro.model_name,
                                     generation_config=self.generation_config,
                                     system_instruction=TRIP_CHECKLIST_EXPERT)
     
-    def generate_trip_checklist(self, item_repository, user_preferences, trip_prompt):
+    def generate_trip_checklist(self, item_repository, user_preferences, trip_prompt, weather_data=None):
         if not self.testing:
-            llm_prompt = trip_prompt + "\nItem Repository\n" + "\n".join(item_repository) + "\n\nUser Preferences\n" + "\n".join(user_preferences)
+            llm_prompt = trip_prompt + "\nWeather\n" + weather_data + "\n\nItem Repository\n" + "\n".join(item_repository) + "\n\nUser Preferences\n" + "\n".join(user_preferences)
             print(llm_prompt)
             self.generation = self.llm.generate_content([llm_prompt])
             print(self.generation.text)

@@ -12,10 +12,10 @@ auth_blueprint_bp = Blueprint('auth', __name__, url_prefix='/auth')
 from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
-from constants import STATIC_FOLDER
+from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
 import json
 import re
-from utils import generate_item_image_id, get_image_path_from_item_image_id
+from utils import generate_item_image_id, get_image_path_from_item_image_id, resize_image_to_target, get_item_image_static_filepath, upload_item_images
 from collections import defaultdict
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,6 +23,9 @@ from models import *
 from flags import *
 from experts import *
 from celery_tasks import generate_product_metadata
+from weather_forecast import WeatherForecast
+
+weather_forecast = WeatherForecast()
 
 ##### Trip Manager Routes #####
 @trip_manager_bp.route('/', methods=['GET', 'POST'])
@@ -56,7 +59,8 @@ def trips():
         current_user.trips.append(trip)        
         db.session.commit()
 
-    return render_template('trip_manager_main.html', trips=current_user.trips)
+    return render_template('trip_manager_main.html', 
+                           trips=current_user.trips)
 
 @trip_manager_bp.route('/trip_id:<int:trip_id>', methods=['GET'])
 @login_required
@@ -127,9 +131,11 @@ def gen_checklist(trip_id):
     for preference in current_user.preferences:
         user_preferences.append(str(preference))
 
+    weather_data = weather_forecast.get_weather_data(trip.destination_city)
     expert_result = trip_checklist_expert.generate_trip_checklist(item_repository=item_repository,
                                                                     user_preferences=user_preferences,
-                                                                    trip_prompt=str(trip))
+                                                                    trip_prompt=str(trip),
+                                                                    weather_data=weather_data)
     # Store the generated checklist.
     generated_trip_checklist = TripChecklist(
         trip_id=trip_id,
@@ -194,7 +200,7 @@ def items():
         care_instruction = request.form['care_instructions']
         images = request.files.getlist('images')
 
-        # Create a new Item object and save it to the database
+        # Create a new Item object and save it to the database.
         user_item = Item(
             user_id=current_user.id,
             category=category,
@@ -207,30 +213,14 @@ def items():
         )
         db.session.add(user_item)
         db.session.flush()
-
-        # Save uploaded images
         user_item_id = user_item.id
-
-        for image in images:
-            if image.filename == '':
-                flash('No selected file!')
-                continue  # Skip to the next file if no file is selected
-            filename = image.filename
-            filepath = os.path.join(app.config['IMAGES_UPLOAD_FOLDER'], "user_" + str(current_user.id), "image_" + generate_item_image_id() + "_" + filename)
-            static_filepath = os.path.join(app.config['STATIC_FOLDER'], filepath)
-            os.makedirs(os.path.dirname(static_filepath), exist_ok=True)
-            image.save(static_filepath)
-
-            # Create ItemImage DB Object.
-            item_image = ItemImage(
-                item_id=user_item.id,
-                path=filepath
-            )
-            db.session.add(item_image)
-            user_item.images.append(item_image)
-
         db.session.commit()
-        flash('Item added successfully!')
+
+        status_codes = upload_item_images(db=db,
+                           user_id=current_user.id,
+                           item_id=user_item_id,
+                           images=images)
+        flash(f"Item Created w/ {status_codes['success']}/{status_codes['all']} images uploaded!")
         return redirect(url_for('item_repository.items'))
     else:
         for item in items:
@@ -268,38 +258,16 @@ def item(item_id):
 @item_repository_bp.route('/item_id:<int:item_id>/upload_image', methods=['POST'])
 @login_required
 def item_image_upload(item_id):
-    user_id = current_user.id
     if request.method == 'POST':
-        # Check if the post request has the file part.
-        if 'image' not in request.files:
+        if 'images' not in request.files:
             flash('No file part!')
             return redirect(request.url)
-        file = request.files['image']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            flash('No selected file!')
-            return redirect(request.url)
-        if file:
-            # Create ItemImage DB Object.
-            item_image = ItemImage(
-                item_id = item_id,
-                path="temp"
-            )
-            db.session.add(item_image)
-            db.session.flush()
+        status_codes = upload_item_images(db=db,
+                           user_id=current_user.id,
+                           item_id=item_id,
+                           images=request.files.getlist('images'))
+        flash(f"Images Uploaded: {status_codes['success']}/{status_codes['all']}")
 
-            filepath = os.path.join(app.config['IMAGES_UPLOAD_FOLDER'], "user_" + str(user_id), "image_" + str(item_image.id) + "_"+ file.filename)
-            static_filepath = os.path.join(app.config['STATIC_FOLDER'], filepath)
-            os.makedirs(os.path.dirname(static_filepath), exist_ok=True)
-            file.save(static_filepath)
-
-            # Update item's list of image file paths.
-            item_image.path = filepath            
-            item = Item.query.get_or_404(item_id)
-            item.images.append(item_image)
-            db.session.commit()
-            flash('File uploaded successfully!')
     return redirect(url_for('item_repository.item', item_id = item_id))
 
 @item_repository_bp.route('/item_id:<int:item_id>/gen_metadata', methods=['GET', 'POST'])

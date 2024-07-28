@@ -87,7 +87,7 @@ class Item(db.Model):
     comments = db.Column(db.Text, nullable=True)
     link = db.Column(db.String(255), nullable=True)
     category = db.Column(db.String(255), nullable=False)
-    images = db.relationship("ItemImage", backref="item_images", cascade="all, delete-orphan", single_parent=True, foreign_keys=[ItemImage.item_id], lazy=True)
+    images = db.relationship("ItemImage", backref="item_images", cascade="all, delete-orphan", single_parent=True, foreign_keys=[ItemImage.item_id])
 
     # Reference a primary image id.
     primary_image_id = db.Column(db.Integer, db.ForeignKey('item_image.id'), nullable=True)

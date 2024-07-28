@@ -1,10 +1,11 @@
 from flask import Flask
 from constants import DUMMY_ITEM_REPOSITORY_PATH, DUMMY_USER_PREFERENCES_PATH, IMAGES_UPLOAD_FOLDER, STATIC_FOLDER
-from item_repository_utils import csv_to_dict
-from datetime import datetime
+from utils import item_repository_csv_to_json
+from datetime import datetime, timedelta
 import os
 import shutil
 import subprocess
+from utils import resize_image_to_target
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
@@ -79,21 +80,21 @@ def populate_database():
     db.session.flush()
 
     # Add Dummy User's Item Repository.
-    dummy_item_repository = csv_to_dict(DUMMY_ITEM_REPOSITORY_PATH)
-    items = []  # Store items to add in a single transaction
-    for category, item_list in dummy_item_repository.items():
-        for item_data in item_list:
-            new_item = Item(
-                name=item_data['Name'],
-                brand=item_data['Brand'],
-                colors=item_data['Colors'],
-                quantity=item_data['Quantity'],
-                comments=item_data['Comments'],
-                link=item_data['Link'],
-                category=category,
-            )
-            items.append(new_item)
-            dummy_user.items.append(new_item)
+    dummy_item_repository_data = item_repository_csv_to_json(DUMMY_ITEM_REPOSITORY_PATH)
+    
+    items = []
+    for dummy_item_data in dummy_item_repository_data:
+        new_item = Item(
+            name=dummy_item_data['Name'],
+            brand=dummy_item_data['Brand'],
+            colors=dummy_item_data['Colors'],
+            quantity=dummy_item_data['Quantity'],
+            comments=dummy_item_data['Comments'],
+            link=dummy_item_data['Link'],
+            category=dummy_item_data['Category'],
+        )
+        items.append(new_item)
+        dummy_user.items.append(new_item)
     db.session.add_all(items)
 
     # Add Dummy User's Preferences.
@@ -105,8 +106,8 @@ def populate_database():
         user_id = dummy_user.id,
         departure_city="San Jose",
         destination_city="New York",
-        start_date=datetime.strptime("2024-07-02", '%Y-%m-%d').date(),
-        end_date=datetime.strptime("2024-07-06", '%Y-%m-%d').date(),
+        start_date=(datetime.now() + timedelta(days=1)).date(),  # Start date is tomorrow
+        end_date=(datetime.now() + timedelta(days=5)).date(),  # End date is 4 days from tomorrow
         laundry_service_available=False,
         working_remotely=False,
         itinerary="Day 1: Sightseeing, Day 2: Sightseeing, Day 3: Sightseeing",
@@ -135,7 +136,13 @@ def populate_database():
             # Copy the image from source to destination.
             os.makedirs(os.path.dirname(item_image_dst_path), exist_ok=True)
             shutil.copy(item_image_src_path, item_image_dst_path)
-            
+
+            # Downsize the image and save it efficiently.
+            with open(item_image_dst_path, "rb") as item_image_file:
+                item_image_data = item_image_file.read()
+                resized_item_image_data = resize_image_to_target(item_image_data)
+                resized_item_image_data.save(item_image_dst_path)
+
             # Update ItemImage DB Object.
             dummy_item_with_images.images.append(ItemImage(item_id = dummy_item_id,path=os.path.join(item_image_db_basepath, item_image_dst_filename)))
 
@@ -153,5 +160,4 @@ def home():
     return index()
 
 if __name__ == '__main__':
-    subprocess.Popen(['brew', 'services', 'restart', 'redis'])
     app.run(debug=True)
