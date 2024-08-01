@@ -54,9 +54,10 @@ app.config.from_mapping(
 celery_app = celery_init_app(app)
 
 # Register all the blueprints.
-from routes import item_repository_bp, trip_manager_bp, user_preferences_bp, auth_blueprint_bp, index
+from routes import item_repository_bp, trip_manager_bp, outfit_manager_bp, user_preferences_bp, auth_blueprint_bp, index
 app.register_blueprint(item_repository_bp)
 app.register_blueprint(trip_manager_bp)
+app.register_blueprint(outfit_manager_bp)
 app.register_blueprint(user_preferences_bp)
 app.register_blueprint(auth_blueprint_bp)
 
@@ -98,7 +99,7 @@ def populate_database():
 
     # Add Dummy User's Preferences.
     with open(DUMMY_USER_PREFERENCES_PATH, 'r') as user_preferences_file:
-        dummy_user.preferences = [UserPreference(preference=line.strip()) for line in user_preferences_file]
+        dummy_user.packing_preferences = [UserPackingPreference(preference=line.strip()) for line in user_preferences_file]
 
     # Add a Dummy Trip.
     dummy_trip = Trip(
@@ -114,10 +115,26 @@ def populate_database():
     )
     db.session.add(dummy_trip)
     dummy_user.trips.append(dummy_trip)
+
+    # Add a Dummy Event.
+    dummy_event1 = Event(
+        user_id = dummy_user.id,
+        city="San Jose",
+        datetime=datetime.now(),
+        description="Hiking Trip"
+    )
+    dummy_event2 = Event(
+        user_id = dummy_user.id,
+        city="San Jose",
+        datetime=datetime.now(),
+        description="Fine Dining with friends"
+    )
+    dummy_user.events.append(dummy_event1)
+    dummy_user.events.append(dummy_event2)
     db.session.commit()
 
     dummy_user_id = dummy_user.id
-    image_extensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif"]
+    image_extensions = [".jpg", ".jpeg", ".png", ".bmp", ".gif", ".webp", ".avif"]
     for dummy_item_id in range(1, 100):
         dummy_item_with_images = db.session.get(Item, dummy_item_id)
 
@@ -140,10 +157,11 @@ def populate_database():
             with open(item_image_dst_path, "rb") as item_image_file:
                 item_image_data = item_image_file.read()
                 resized_item_image_data = resize_image_to_target(item_image_data)
-                resized_item_image_data.save(item_image_dst_path)
-
-            # Update ItemImage DB Object.
-            dummy_item_with_images.images.append(ItemImage(item_id = dummy_item_id,path=os.path.join(item_image_db_basepath, item_image_dst_filename)))
+                if resized_item_image_data:
+                    resized_item_image_data.save(item_image_dst_path)
+                    # Update ItemImage DB Object.
+                    dummy_item_with_images.images.append(ItemImage(item_id = dummy_item_id,
+                                                                   path=os.path.join(item_image_db_basepath, item_image_dst_filename)))
 
     # Commit the changes to the database.
     db.session.commit()

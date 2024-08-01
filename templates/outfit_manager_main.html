@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}My Outfits{% endblock %}
+{% block central_title %} Packr: Your Outfit Hub {% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">Add a New Outfit Suggestion</h2>
+                <form method="POST" action="{{ url_for('outfit_manager.events') }}">
+                    <div class="mb-4">
+                        <label for="event_details" class="block text-gray-700 text-sm font-medium mb-2">Event
+                            Details</label>
+                        <textarea id="event_details" name="event_details" rows="3"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="city" class="block text-gray-700 text-sm font-medium mb-2">City</label>
+                            <input type="text" id="city" name="city"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="date" class="block text-gray-700 text-sm font-medium mb-2">Date</label>
+                            <input type="date" id="date" name="date" value="{{ default_date }}"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="time" class="block text-gray-700 text-sm font-medium mb-2">Time</label>
+                            <input type="time" id="time" name="time"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md mt-6">
+                        Generate
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-semibold mb-4">Your Outfits</h2>
+                <ul>
+                    {% for event in events %}
+                    <li class="border-b border-gray-200 py-3">
+                        <a href="{{url_for('outfit_manager.event', event_id=event.id)}}" class="flex justify-between items-center hover:bg-gray-100 px-2 py-2 rounded-md">
+                            <div>
+                                <h3 class="font-medium">
+                                    Outfit for {{ event.description }}
+                                </h3>
+                                <p class="text-sm text-gray-500">
+                                    {{ event.city }} - {{ event.datetime.strftime('%Y-%m-%d %H:%M') }}
+                                </p>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

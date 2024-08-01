@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from utils import get_json_from_generation
-from constants import TRIP_CHECKLIST_EXPERT, PRODUCT_IMAGE_TO_METADATA_EXPERT
-from constants import TEST_PRODUCT_METADATA, TEST_TRIP_CHECKLIST
+from constants import TRIP_CHECKLIST_EXPERT, PRODUCT_IMAGE_TO_METADATA_EXPERT, OUTFIT_EXPERT
+from constants import TEST_PRODUCT_METADATA, TEST_TRIP_CHECKLIST, TEST_OUTFIT
 import json
 import time
 
@@ -121,4 +121,38 @@ class ProductImageToMetadataExpert(GeminiFlash):
             return self.generation
         else:
             self.generation = json.loads(TEST_PRODUCT_METADATA)
+            return self.generation
+        
+class OutfitExpert(GeminiFlash):
+    generation_config = {
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 64,
+            "max_output_tokens": 16384,
+            "response_mime_type": "application/json",
+        }
+    generation = None
+    testing = False # Returns a default JSON Response.
+    
+    def __init__(self, api_key=None, testing=False) -> None:
+        self.testing = testing
+        if not testing:
+            GeminiFlash.initialize_model(api_key)
+            self.llm = genai.GenerativeModel(model_name=GeminiFlash.model_name,
+                                generation_config=self.generation_config,
+                                system_instruction=OUTFIT_EXPERT)
+    
+    def generate_outfits(self, wardrobe_invetory = [], 
+                         user_style_preferences = [], 
+                         event_details = "casual", 
+                         weather_data=None):
+        if not self.testing:
+            llm_prompt = "Wardrobe Repository\n" + "\n".join(wardrobe_invetory) + "\n\nWeather Data\n" + weather_data + "\n\nEvent Details\n" + event_details + "\n\nStyle Preferences\n" + "\n".join(user_style_preferences) + "\n"
+            print(llm_prompt)
+            self.generation = self.llm.generate_content([llm_prompt])
+            print(self.generation.text)
+            self.generation = get_json_from_generation(self.generation.text)
+            return self.generation
+        else:
+            self.generation = json.loads(TEST_OUTFIT)
             return self.generation

@@ -1,31 +1,53 @@
 {% extends "base.html" %}
 
-{% block title %}User Preferences{% endblock %}
-{% block central_title %} User Preferences {% endblock %}
+{% block title %} Preferences {% endblock %}
+{% block central_title %} Preferences {% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row gap-4">
-    <div class="w-full md:w-1/2 p-4">
-        <div class="card">
-            <div class="card-content">
-                <h2 class="text-2xl font-bold mb-4">Your Preferences</h2>
-                <ul class="list-disc pl-6">
-                    {% for preference in preferences %}
-                    <li class="mb-2">{{ preference }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+<div class="container mx-auto p-4"> 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Packing Preferences</h2>
+            <ul class="list-disc pl-6 text-gray-700">
+                {% for preference in packing_preferences %} 
+                <li class="mb-2">{{ preference }}</li>
+                {% endfor %}
+            </ul>
+
+            <form method="POST" action="{{url_for('user_preferences.user_preferences')}}" class="mt-6">
+                <div class="flex">
+                    <input type="text" id="packing_preference" name="packing_preference" value="" required
+                        placeholder="Add packing preference"
+                        class="flex-grow px-4 py-2 text-gray-700 bg-gray-100 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div> 
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Style Preferences</h2>
+            <ul class="list-disc pl-6 text-gray-700">
+                {% for preference in style_preferences %}
+                <li class="mb-2">{{ preference }}</li>
+                {% endfor %}
+            </ul>
+
+            <form method="POST" action="{{url_for('user_preferences.user_preferences')}}" class="mt-6">
+                <div class="flex">
+                    <input type="text" id="style_preference" name="style_preference" value="" required
+                        placeholder="Add style preference"
+                        class="flex-grow px-4 py-2 text-gray-700 bg-gray-100 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        Add
+                    </button>
+                </div>
+            </form>
         </div>
-    </div>
-    <div class="w-full md:w-1/2 p-4">
-        <form method="POST" action="">
-            <div class="mb-4">
-                <label for="new_preference" class="block text-gray-700 text-sm font-bold mb-2">Enter preference:</label>
-                <input type="text" id="new_preference" name="new_preference" value="" required
-                    class="form-input appearance-none block w-full px-3 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300">
-            </div>
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Add Preference</button>
-        </form>
     </div>
 </div>
 {% endblock %}

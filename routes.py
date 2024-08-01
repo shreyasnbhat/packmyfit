@@ -5,6 +5,8 @@ item_repository_bp = Blueprint('item_repository', __name__,
                                url_prefix='/item_repository')
 trip_manager_bp = Blueprint('trip_manager', __name__, 
                             url_prefix='/trip_manager')
+outfit_manager_bp = Blueprint('outfit_manager', __name__, 
+                              url_prefix='/outfit_manager')
 user_preferences_bp = Blueprint('user_preferences', __name__, 
                                 url_prefix='/user_preferences')
 auth_blueprint_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -15,7 +17,7 @@ import os
 from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
 import json
 import re
-from utils import generate_item_image_id, get_image_path_from_item_image_id, resize_image_to_target, get_item_image_static_filepath, upload_item_images
+from utils import get_image_path_from_item_image_id, upload_item_images
 from collections import defaultdict
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -128,7 +130,7 @@ def gen_checklist(trip_id):
     
     # Query and format the User Preferences.
     user_preferences = []
-    for preference in current_user.preferences:
+    for preference in current_user.packing_preferences:
         user_preferences.append(str(preference))
 
     weather_data = weather_forecast.get_weather_data(trip.destination_city)
@@ -176,11 +178,135 @@ def gen_checklist(trip_id):
     db.session.commit()
     return redirect(url_for('trip_manager.trip', trip_id=trip_id))
 
-
-@trip_manager_bp.route('/trip_id:<int:trip_id>/checklists/checklist_id:<int:checklist_id>', methods=['GET', 'POST'])
+##### Outfit Manager Routes #####
+@outfit_manager_bp.route('/', methods=['GET', 'POST'])
 @login_required
-def checklist(trip_id, checklist_id):
-    pass
+def events():
+    """Handles creating new events."""
+    if request.method == 'POST':
+        event_details = request.form.get('event_details')
+        city = request.form.get('city')
+        date = request.form.get('date')
+        time = request.form.get('time')
+
+        if city is None:
+            city = "San Francisco"  # Default City
+
+        if not all([event_details, date, time]): 
+            flash('Please provide Event Details, City, Date, and Time!', 'danger')
+            return redirect(url_for('outfit_manager.events')) 
+
+        try:
+            # Combine date and time into a single datetime object.
+            datetime_str = f"{date} {time}"
+            event_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
+        except ValueError:
+            flash('Invalid date or time format!', 'danger')
+            return redirect(url_for('outfit_manager.events'))
+
+        event = Event(description=event_details, city=city, datetime=event_datetime)
+        current_user.events.append(event)
+        db.session.add(event)
+        db.session.commit()
+
+        flash('Event created successfully!', 'success')
+        return redirect(url_for('outfit_manager.event', event_id=event.id))
+
+    return render_template("outfit_manager_main.html", events=current_user.events)
+
+@outfit_manager_bp.route('/event_id:<int:event_id>', methods=['GET'])
+@login_required
+def event(event_id):
+    event = db.session.get(Event, event_id)
+    outfits_data = []
+    for outfit in event.outfits:
+        outfit_data = {
+            'outfitId': outfit.id,
+            'description': outfit.description,
+            'pieces': [],  
+            'imagePrompt': outfit.image_prompt,
+            'style': outfit.style,
+            'colorPalette': json.loads(outfit.color_palette) if outfit.color_palette else [], # Parse color_palette
+            'missing': [{'name': missing_item.name, 'category': missing_item.category, 'reason': missing_item.reason} for missing_item in outfit.missing_items]
+        }
+        # Query the item details and substitute in the JSON
+        outfit_data['pieces'] = [{'item': Item.query.get(outfit_item.item_id), 'reason': outfit_item.reason} for outfit_item in outfit.outfit_items]
+        outfits_data.append(outfit_data)
+
+    return render_template("outfit_display.html", event=event, outfits=outfits_data)
+
+@outfit_manager_bp.route('/event_id:<int:event_id>/generate_outfits', methods=['POST'])
+@login_required
+def generate_outfits(event_id):
+    event = db.session.get(Event, event_id)
+    
+    # Check weather at event city.
+    weather_data = weather_forecast.get_weather_data(city=event.city)
+
+    # Query the Item Repository to obtain the user's Wardrobe Inventory.
+    wardrobe_inventory = [str(item) for item in current_user.items if item.category in ["Clothes", "Footwear"]]
+
+    # Collect the user's style preferences.
+    user_style_preferences = current_user.style_preferences
+
+    # Query the expert to obtain the outfits.
+    expert_result = outfit_expert.generate_outfits(wardrobe_inventory,
+                        user_style_preferences,
+                        event.description,
+                        weather_data)
+    
+    # Delete all existing outfits that were generated for this event.
+    try:
+        outfits = db.session.query(Outfit).filter_by(event_id=event_id).all()
+        for outfit in outfits:
+            # Delete related OutfitItems.
+            for outfit_item in outfit.outfit_items:
+                db.session.delete(outfit_item)
+
+            # Delete related MissingItems.
+            for missing_item in outfit.missing_items:
+                db.session.delete(missing_item)
+
+            # Now delete the Outfit.
+            db.session.delete(outfit)
+
+        db.session.commit()
+        flash('Outfits deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting outfits: {e}!', 'danger')
+
+    # Save generated outfits.
+    for outfit_data in expert_result['outfits']:
+        outfit = Outfit(
+            event_id=event_id,
+            image_prompt=outfit_data['imagePrompt'],
+            style=outfit_data['style'],
+            color_palette=json.dumps(outfit_data['colorPalette']), # Store as JSON string
+            description=outfit_data['description']
+        )
+        db.session.flush()  # To get the outfit.outfit_id
+
+        for outfit_piece in outfit_data['pieces']:
+            outfit_item = OutfitItem(
+                outfit_id=outfit.id,
+                item_id=outfit_piece['itemId'],
+                reason=outfit_piece['reason']
+            )
+            outfit.outfit_items.append(outfit_item)
+
+        for missing_item_data in outfit_data['missing']:
+            missing_item = MissingItem(
+                outfit_id=outfit.id,
+                name=missing_item_data['name'],
+                category=missing_item_data['category'],
+                reason=missing_item_data.get('reason')  # 'reason' may not always be present
+            )
+            outfit.missing_items.append(missing_item)
+        event.outfits.append(outfit) 
+    db.session.commit()
+
+    return redirect(url_for('outfit_manager.event', event_id=event.id))
 
 
 ##### Item Repository Routes #####
@@ -310,15 +436,20 @@ def item_generate_metadata(item_id):
 @login_required
 def user_preferences():
     if request.method == 'POST':
-        new_preference = request.form.get('new_preference')
-        if new_preference:
-            current_user.preferences.append(UserPreference(user_id=current_user.id, preference=new_preference))
+        packing_preference = request.form.get('packing_preference')
+        style_preference = request.form.get('style_preference')
+        if packing_preference:
+            current_user.packing_preferences.append(UserPackingPreference(user_id=current_user.id, preference=packing_preference))
             db.session.commit()
+        if style_preference:
+            current_user.style_preferences.append(UserStylePreference(user_id=current_user.id, preference=style_preference))
+            db.session.commit() 
         return redirect(url_for('user_preferences.user_preferences'))
     else:
         # Display the user's preferences
-        preferences = [preference.preference for preference in current_user.preferences]
-        return render_template('user_preferences.html', preferences=preferences)
+        packing_preferences = [packing_preference.preference for packing_preference in current_user.packing_preferences]
+        style_preferences = [style_preference.preference for style_preference in current_user.style_preferences]
+        return render_template('user_preferences.html', packing_preferences=packing_preferences, style_preferences=style_preferences)
 
 #### User Signup & Login Routes ####
 @auth_blueprint_bp.route('/login', methods=['GET', 'POST'])

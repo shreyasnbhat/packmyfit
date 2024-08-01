@@ -1,5 +1,5 @@
 import unittest
-from trip_checklist_models import db, TripChecklist, TripChecklistGroup, TripChecklistItem, Trip, User, Item, UserPreference, TripChecklistMiscInformation
+from trip_checklist_models import db, TripChecklist, TripChecklistGroup, TripChecklistItem, Trip, User, Item, UserPackingPreference, TripChecklistMiscInformation
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -112,12 +112,12 @@ class TripChecklistModelsTest(unittest.TestCase):
         self.assertEqual(item.category, 'Electronics')
 
     def test_user_preference_creation(self):
-        """Test creating a UserPreference."""
+        """Test creating a UserPackingPreference."""
         user = User(username='testuser', display_name='Test User', email='test@example.com', password='password')
         self.session.add(user)
         self.session.commit()
 
-        preference = UserPreference(user_id=user.id, preference='Carry-on Only')
+        preference = UserPackingPreference(user_id=user.id, preference='Carry-on Only')
         self.session.add(preference)
         self.session.commit()
 

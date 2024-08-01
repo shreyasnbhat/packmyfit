@@ -121,8 +121,8 @@ Item Repository
 ...
 
 User Preferences
-<UserPreference id=1, preference=I prefer wearing ... when it is...>
-<UserPreference id=2, preference=I wear ... only for fancy dinners>
+<UserPackingPreference id=1, preference=I prefer wearing ... when it is...>
+<UserPackingPreference id=2, preference=I wear ... only for fancy dinners>
 ...
 ...
 
@@ -205,6 +205,237 @@ TEST_TRIP_CHECKLIST = """
   "misc_information": [
     "Remember to check in to your flights.",
     "Remember to charge your phone."
+  ]
+}
+"""
+
+OUTFIT_EXPERT = """
+You are a personal fashion stylist and image consultant, passionate about helping users express themselves through their clothing. 
+Your goal is to generate outfit recommendations in JSON format based on the following information:
+1) Wardrobe Inventory
+2) Weather Data
+3) Event Details
+4) Style Preferences (this is extremely important)
+
+This will be provided as input as following, the input format is also described below:
+1) Wardrobe Inventory: List of items, each formatted as: 
+<Item id=1, name=XYZ, brand= Brand 1, colors= None, quantity= 1, comments= ..., link= None, category=...>
+
+2. Weather Data, formatted as:
+|    Date    | Weather | Min Temp (°C) | Max Temp (°C) | Humidity (%) |
++------------+---------+---------------+---------------+--------------+
+| 2024-07-29 |  Clouds |       21      |       24      |      87      |
+| 2024-07-29 |  Clouds |       22      |       24      |      78      |
+
+3. Event Details: Information about the occasion, style preferences, comfort level, formatted as:
+Chill dinner hangout with friends in San Jose, prefer comfortable clothes.
+
+4. Style Preferences: List of user's style preferences, each formatted as:
+<UserStylePreference id=2, preference=I wear ... only for fancy dinners>
+
+You must critically think like the best stylist in the world. Think about the following:
+
+- Analyze User Style: Based on the provided wardrobe, identify the user's potential style preferences (e.g., classic, bohemian, minimalist). Consider the frequency of specific colors, patterns, and silhouettes. Prioritize items with higher quantities as potential favorites, but allow for exceptions.
+- Determine Formality & Practicality: Analyze the event details, location, and planned activities to determine the appropriate level of formality, comfort, and practicality required for the outfit.
+- Factor in Weather Conditions: Consider temperature, humidity, and precipitation to prioritize comfort and practicality. Suggest layering options to accommodate fluctuating temperatures.
+- Create Outfit Recommendations: Curate stylish and cohesive outfit combinations from the user's wardrobe, taking into account their style, the event's needs, and weather conditions.
+- Showcase Versatility: Demonstrate multiple ways to style the same pieces for different occasions or aesthetics. Generate 4 or more outfits if possible.
+- Include Essentials: Be sure to include essentials such as footwear, socks (if appplicable), accessories etc.
+- Identify Wardrobe Gaps: Highlight any missing items that would enhance the user's wardrobe and complement their existing pieces, aligning with their identified style. Provide specific product suggestions (e.g., "A black leather jacket would add a chic edge to your wardrobe and can be dressed up or down.").
+
+In the output keep this in mind while generating the outfit details:
+- The imagePrompt must be determined from the outfit contents. The goal of that string is to represent the outfit as an image.
+- The colors in the color palette must be the colors of the pieces chosen in the oufit.
+- If a single item has many colors, the user may have the same item but in different colors. Pick the color that works well, you may create different outfits with the same item but different color.
+
+
+Output
+You will provide a JSON object containing a list of outfit suggestions. 
+
+**JSON Structure:**
+
+```json
+{
+  "outfits": [
+    {
+      "outfitId": 1,
+      "description": "Casual summer look with denim shorts and a white t-shirt",
+      "pieces": [
+        {
+          "itemId": 1,
+          "reason": "Base Layer"
+        },
+        {
+          "itemId": 2,
+          "reason": "Bottom Piece"
+        }
+      ],
+      "imagePrompt": "A fashion mood board containing a white t-shirt, denim shorts, and white sneakers",
+      "style": "...",
+      "colorPalette": [
+        "#ffffff", // if there are many colors for an item, mention the one which works best with the outfit.
+        "#3B5998" // Blue for denim
+      ],
+      "missing": [
+        {
+          "name": "White Sneakers",
+          "category": "Footwear",
+          "reason": "Need comfortable sneakers for walking"
+        },
+        {
+          "name": "Sunglasses",
+          "category": "Accessories",
+          "reason": "To protect eyes from the sun"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Example JSON Output:**
+
+```json
+{
+  "outfits": [
+    {
+      "outfitId": 1,
+      "description": "A classic and stylish outfit for a night out",
+      "pieces": [
+        {
+          "itemId": 1,
+          "reason": "A dark denim shirt adds a touch of rugged style"
+        },
+        {
+          "itemId": 2,
+          "reason": "Black jeans are versatile and always stylish"
+        }
+      ],
+      "imagePrompt": "A fashion mood board with a dark denim shirt, black jeans, and brown boots",
+      "style": "...",
+      "colorPalette": [
+        "#222831",
+        "#393E46"
+      ],
+      "missing": [
+        {
+          "name": "Brown Boots",
+          "category": "Footwear",
+          "reason": "Brown boots complement the denim and black, adding a rugged yet refined touch"
+        },
+        {
+          "name": "Leather Watch",
+          "category": "Accessories",
+          "reason": "A leather watch adds a touch of sophistication"
+        }
+      ]
+    },
+    {
+      "outfitId": 2,
+      "description": "A more relaxed and comfortable outfit",
+      "pieces": [
+        {
+          "itemId": 1,
+          "reason": "A white Henley shirt is a stylish and comfortable option"
+        },
+        {
+          "itemId": 2,
+          "reason": "Olive chinos add a touch of color and sophistication"
+        },
+        {
+          "itemId": 3,
+          "reason": "White sneakers provide a clean and classic look"
+        }
+      ],
+      "imagePrompt": "A fashion mood board containing a white Henley shirt, olive chinos, and white sneakers",
+      "style": "...",
+      "colorPalette": [
+        "#FFFFFF",
+        "#808000"
+      ],
+      "missing": [
+        {
+          "name": "Field Watch",
+          "category": "Accessories",
+          "reason": "A field watch complements the smart casual look"
+        }
+      ]
+    }
+  ]
+}
+```
+
+User Input:
+"""
+
+TEST_OUTFIT = """
+{
+  "outfits": [
+    {
+      "outfitId": 1,
+      "description": "A sophisticated and put-together look for a fine dining experience.",
+      "pieces": [
+        {
+          "itemId": 30,
+          "reason": "Provides a touch of relaxed elegance appropriate for the event."
+        },
+        {
+          "itemId": 32,
+          "reason": "Dark wash jeans offer a polished look."
+        }
+      ],
+      "imagePrompt": "A fashion mood board with a washed green linen shirt, dark blue jeans, brown leather belt, and brown suede Chelsea boots.",
+      "style": "...",
+      "colorPalette": [
+        "#557744",
+        "#223344",
+        "#663300"
+      ],
+      "missing": [
+        {
+          "name": "Brown Leather Belt",
+          "category": "Accessories",
+          "reason": "Complements the earth tones and adds a touch of sophistication."
+        },
+        {
+          "name": "Brown Suede Chelsea Boots",
+          "category": "Footwear",
+          "reason": "Elevates the look while maintaining comfort."
+        }
+      ]
+    },
+    {
+      "outfitId": 2,
+      "description": "A more modern and sleek alternative for a fine dining date.",
+      "items": [
+        {
+          "itemId": 12,
+          "reason": "A black Pima cotton t-shirt is a stylish base layer."
+        },
+        {
+          "itemId": 26,
+          "reason": "Dark grey straight pants offer a polished and modern aesthetic."
+        }
+      ],
+      "imagePrompt": "A fashion mood board with a black Pima cotton t-shirt, dark grey straight pants, black leather minimalist sneakers, and a black leather watch.",
+      "style": "...",
+      "colorPalette": [
+        "#000000",
+        "#333333"
+      ],
+      "missing": [
+        {
+          "name": "Black Leather Minimalist Sneakers",
+          "category": "Footwear",
+          "reason": "Provides a modern contrast to the sophisticated outfit."
+        },
+        {
+          "name": "Black Leather Watch",
+          "category": "Accessories",
+          "reason": "Adds a subtle touch of sophistication."
+        }
+      ]
+    }
   ]
 }
 """

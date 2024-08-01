@@ -1,87 +1,107 @@
 {% extends "base.html" %}
 
 {% block title %}Trip Details{% endblock %}
-{% block central_title %} Packr: Trip Details {% endblock %}
+{% block central_title %}Packr: Trip Details{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6"> 
-        <h2 class="text-2xl font-semibold mb-4">Trip Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <p class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Trip Details</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Trip Dates and Route -->
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-4 text-white shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-center">
+                        <p class="text-xs uppercase">Start</p>
+                        <p class="text-lg font-bold">{{ trip.start_date.strftime('%b %d, %Y') }}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
-                    <strong>Departure City:</strong> {{ trip.departure_city }}
-                </p>
-                <p class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    <div class="text-center">
+                        <p class="text-xs uppercase">End</p>
+                        <p class="text-lg font-bold">{{ trip.end_date.strftime('%b %d, %Y') }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="text-center">
+                        <p class="text-xs uppercase">From</p>
+                        <p class="text-lg font-bold">{{ trip.departure_city }}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
                     </svg>
-                    <strong>Destination City:</strong> {{ trip.destination_city }}
-                </p>
+                    <div class="text-center">
+                        <p class="text-xs uppercase">To</p>
+                        <p class="text-lg font-bold">{{ trip.destination_city }}</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <p class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+
+            <!-- Trip Information -->
+            <div class="bg-gray-100 rounded-lg p-4 flex flex-col justify-between">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <strong>Start Date:</strong> {{ trip.start_date.strftime('%Y-%m-%d') }}
-                </p>
-                <p class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <div>
+                        <p class="text-sm text-gray-600">Laundry Service</p>
+                        <p class="font-semibold">{{ "Available" if trip.laundry_service_available else "Not Available" }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <strong>End Date:</strong> {{ trip.end_date.strftime('%Y-%m-%d') }}
-                </p>
+                    <div>
+                        <p class="text-sm text-gray-600">Working Remotely</p>
+                        <p class="font-semibold">{{ "Yes" if trip.working_remotely else "No" }}</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-            <p class="text-gray-700 mt-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15m-11-11v-5h.582m0 0a8.001 8.001 0 0115.357-2m-15.357 2H15" />
-                </svg>
-                <strong>Laundry Service Available:</strong> {{ trip.laundry_service_available }}
-            </p>
-            <p class="text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 012-2 2 2 0 012 2v6m3-13a2 2 0 012-2 2 2 0 01-2 2m3 5a2 2 0 012-2 2 2 0 01-2 2m3-13a2 2 0 012-2 2 2 0 01-2 2m3 5a2 2 0 012-2 2 2 0 01-2 2" />
-                </svg>
-                <strong>Working Remotely:</strong> {{ trip.working_remotely }}
-            </p>
-        </div>
+
+        <!-- Generate Checklist Button -->
         <form id="generate_checklist_form" class="mt-6" method="POST"
-              action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id)}}">
+              action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id) }}">
             <input type="hidden" name="trip_id" value="{{ trip.id }}">
             <button id="generate_checklist_button"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:shadow-outline"
-                    type="submit">Generate Checklist</button>
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-101"
+                    type="submit">
+                Generate Checklist
+            </button>
         </form>
     </div>
-    
+
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold mb-4">Checklist</h2>
 
         {% if checklists %}
         <div class="mb-4">
-            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="checklist-tabs" data-tabs-toggle="#checklist-tabs-content" role="tablist">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="checklist-tabs"
+                data-tabs-toggle="#checklist-tabs-content" role="tablist">
                 {% for checklist_group in checklists[0].checklist_groups %}
                 <li class="mr-2" role="presentation">
-                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-600 dark:hover:text-blue-500 {{ 'border-blue-600 text-blue-600' if loop.index == 1 else 'border-gray-300 text-gray-500' }}" id="checklist-tab-{{ loop.index }}" data-tabs-target="#checklist-{{ loop.index }}" type="button" role="tab" aria-controls="checklist-{{ loop.index }}" aria-selected="{{ 'true' if loop.index == 1 else 'false' }}">{{ checklist_group.name }}</button>
+                    <button
+                        class="inline-block p-4 border-b-2 rounded-t-lg hover:text-blue-600 hover:border-blue-600 dark:hover:text-blue-500 {{ 'border-blue-600 text-blue-600' if loop.index == 1 else 'border-gray-300 text-gray-500' }}"
+                        id="checklist-tab-{{ loop.index }}" data-tabs-target="#checklist-{{ loop.index }}" type="button"
+                        role="tab" aria-controls="checklist-{{ loop.index }}"
+                        aria-selected="{{ 'true' if loop.index == 1 else 'false' }}">{{ checklist_group.name }}</button>
                 </li>
                 {% endfor %}
             </ul>
         </div>
         <div id="checklist-tabs-content">
             {% for checklist_group in checklists[0].checklist_groups %}
-            <div class="{{ 'block' if loop.index == 1 else 'hidden' }} p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="checklist-{{ loop.index }}" role="tabpanel" aria-labelledby="checklist-tab-{{ loop.index }}">
+            <div class="{{ 'block' if loop.index == 1 else 'hidden' }} p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                id="checklist-{{ loop.index }}" role="tabpanel" aria-labelledby="checklist-tab-{{ loop.index }}">
                 <table class="w-full text-left table-auto">
                     <thead>
                         <tr>
                             <th class="px-4 py-2 text-left">Item</th>
                             <th class="px-4 py-2 text-left">Quantity</th>
-                            <th class="px-4 py-2 text-left">Metadata</th> 
+                            <th class="px-4 py-2 text-left">Metadata</th>
                         </tr>
                     </thead>
                     <tbody>

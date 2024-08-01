@@ -53,7 +53,6 @@ def get_json_from_generation(content: str) -> Any:
     json_data = None
     try:
         output_stripped = re.sub(r'```(?:json|JSON)\n|\n```', '', content)
-        print(output_stripped)
         json_data = json.loads(output_stripped)
     except json.JSONDecodeError:
         raise json.JSONDecodeError("Failed to parse JSON from generation.")
@@ -99,18 +98,20 @@ def upload_item_images(db, user_id:int, item_id:int, images):
         # Construct the image destination path.
         item_image_filepath, item_image_static_filepath = get_item_image_static_filepath(user_id=user_id,
                                         filename=image.filename)
-        # Create ItemImage DB Object.
-        item_image = ItemImage(
-            item_id = item_id,
-            path=item_image_filepath
-        )
-        db.session.add(item_image)
-        user_item.images.append(item_image)
-
         # Resize the image & save the image.
         resized_image = resize_image_to_target(image.read())
-        resized_image.save(item_image_static_filepath)
-        status_codes["success"]+=1
+        if resized_image:
+          resized_image.save(item_image_static_filepath)
+          item_image = ItemImage(
+            item_id = item_id,
+            path=item_image_filepath
+          )
+          db.session.add(item_image)
+          user_item.images.append(item_image)
+          status_codes["success"]+=1
+        else:
+           print(f"Error uploading: {image.filename}")
+           status_codes["error"]+=1
   db.session.commit()
   return status_codes
 
@@ -125,7 +126,11 @@ def resize_image_to_target(image_data: bytes, target_size: int = 512) -> Image:
     Returns:
         The resized image data as bytes.
     """
-    image = Image.open(io.BytesIO(image_data))
+    try:
+      image = Image.open(io.BytesIO(image_data))
+    except:
+       print("Image could not be read.")
+       return None
 
     # Calculate new dimensions while preserving aspect ratio
     width, height = image.size

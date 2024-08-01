@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
@@ -139,16 +138,17 @@
 
             <div class="flex items-center">
                 <div class="hidden md:flex space-x-8">
+                    <a href="{{ url_for('home') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Home</a>
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('item_repository.items') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Item
-                        Repository</a>
+                    <a href="{{ url_for('outfit_manager.events') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Outfits</a>
                     <a href="{{ url_for('trip_manager.trips') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trip
-                        Manager</a>
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trips</a>
+                    <a href="{{ url_for('item_repository.items') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Items</a>
                     <a href="{{ url_for('user_preferences.user_preferences') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">User
-                        Preferences</a>
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Preferences</a>
                     <div class="relative inline-block">
                         <button
                             class="inline-flex items-center justify-center px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200"
@@ -166,10 +166,10 @@
                         </div>
                     </div>
                     {% else %}
-                    <a href="{{ url_for('auth.login') }}"
-                        class="bg-[#42BA96] hover:bg-[#36a380] font-bold py-2 px-6 rounded-full text-base transition duration-300 ease-in-out">
-                        Log In
-                    </a>
+                    <a href="#features" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Features</a>
+                    <a href="#how-it-works" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">How It Works</a>
+                    <a href="{{ url_for('auth.login') }}" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Login</a>
+                    <a href="{{ url_for('auth.signup') }}" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Get Started</a>
                     {% endif %}
                 </div>
 
@@ -187,16 +187,25 @@
 
         <div id="mobile-menu" class="md:hidden bg-white">
             <ul class="py-2 px-4">
+                <a href="{{ url_for('home') }}" class="block py-2 px-4 hover:bg-gray-100">Home</a>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('item_repository.items') }}" class="block py-2 px-4 hover:bg-gray-100">Item
-                        Repository</a></li>
-                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trip
-                        Manager</a></li>
+                <li><a href="{{ url_for('outfit_manager.events') }}"
+                        class="block py-2 px-4 hover:bg-gray-100">Outfits</a></li>
+                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trips</a>
+                </li>
+                <li><a href="{{ url_for('item_repository.items') }}" class="block py-2 px-4 hover:bg-gray-100">Items</a>
+                </li>
                 <li><a href="{{ url_for('user_preferences.user_preferences') }}"
-                        class="block py-2 px-4 hover:bg-gray-100">User
-                        Preferences</a></li>
+                        class="block py-2 px-4 hover:bg-gray-100">Preferences</a></li>
                 <li><a href="{{ url_for('auth.logout') }}" class="block py-2 px-4 hover:bg-gray-100">Logout</a></li>
-                {% endif %}
+                {% else %}
+                <nav>
+                    <li><a href="#features" class="block py-2 px-4 hover:bg-gray-100">Features</a></li>
+                    <li><a href="#how-it-works" class="block py-2 px-4 hover:bg-gray-100">How It Works</a></li>
+                    <li><a href="{{ url_for('auth.login') }}" class="block py-2 px-4 hover:bg-gray-100">Login</a></li>
+                    <li><a href="{{ url_for('auth.signup') }}" class="block py-2 px-4 hover:bg-gray-100">Get Started</a>
+                    </li>
+                    {% endif %}
             </ul>
         </div>
     </nav>
@@ -211,7 +220,8 @@
         });
     </script>
 
-    <div class="content-container"> {% block content %}{% endblock %}
+    <div class="content-container">
+        {% block content %}{% endblock %}
     </div>
 </body>
 
