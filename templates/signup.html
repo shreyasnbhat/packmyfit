@@ -4,13 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Login{% endblock %}</title>
+    <title>{% block title %}Sign Up{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             background-image: url('{{url_for('static', filename='homepage.jpg')}}');
             background-size: cover;
             background-repeat: no-repeat;
+            font-family: 'Google Sans', sans-serif; /* Apply Google Sans to the entire body */
+        }
+
+        .caveat-font {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 54px;
         }
 
         .login-container {
@@ -24,41 +36,44 @@
     <div class="flex min-h-screen items-center justify-center bg-cover bg-center"
         style="background-image: url('{{ url_for('static', filename='homepage.jpg') }}');">
         <div class="login-container p-8 rounded-lg shadow-md w-full max-w-md">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Sign Up</h2>
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 caveat-font">{% block central_title %} PackMyFit {% endblock %}</h2>
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-8">Sign Up</h3>
 
             <form method="POST" action="{{url_for('auth.signup')}}">
                 <div class="mb-4">
-                    <label for="username" class="block text-gray-700 font-bold mb-2">Username:</label>
+                    <label for="username" class="block text-gray-700 font-bold mb-2">Username</label>
                     <input type="text" id="username" name="username"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         required>
                 </div>
                 <div class="mb-4">
-                    <label for="email" class="block text-gray-700 font-bold mb-2">Email:</label>
+                    <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
                     <input type="email" id="email" name="email"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         required>
                 </div>
                 <div class="mb-4">
-                    <label for="display_name" class="block text-gray-700 font-bold mb-2">Display Name:</label>
+                    <label for="display_name" class="block text-gray-700 font-bold mb-2">Display Name</label>
                     <input type="text" id="display_name" name="display_name"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         required>
                 </div>
                 <div class="mb-6">
-                    <label for="password" class="block text-gray-700 font-bold mb-2">Password:</label>
+                    <label for="password" class="block text-gray-700 font-bold mb-2">Password</label>
                     <input type="password" id="password" name="password"
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         required>
                 </div>
                 <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                    class="bg-green-500 hover:bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
                     Sign Up
                 </button>
 
                 <div class="text-center mt-6">
-                    <p class="text-gray-600">Already have an account? <a href="{{url_for('auth.login')}}"
-                            class="text-blue-500 hover:text-blue-800">Log In</a></p>
+                    <a href="{{ url_for('auth.login') }}"
+                        class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        Already have an account? Log In!
+                    </a>
                 </div>
             </form>
         </div>

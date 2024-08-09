@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from utils import get_json_from_generation
-from constants import TRIP_CHECKLIST_EXPERT, PRODUCT_IMAGE_TO_METADATA_EXPERT, OUTFIT_EXPERT
-from constants import TEST_PRODUCT_METADATA, TEST_TRIP_CHECKLIST, TEST_OUTFIT
+from constants import TRIP_CHECKLIST_EXPERT, PRODUCT_IMAGE_TO_METADATA_EXPERT, OUTFIT_EXPERT, TRIP_ITINERARY_EXPERT
+from constants import TEST_PRODUCT_METADATA, TEST_TRIP_CHECKLIST, TEST_OUTFIT, TEST_TRIP_ITINERARY
 import json
 import time
 
@@ -75,11 +75,45 @@ class TripChecklistExpert(GeminiPro):
             llm_prompt = trip_prompt + "\nWeather\n" + weather_data + "\n\nItem Repository\n" + "\n".join(item_repository) + "\n\nUser Preferences\n" + "\n".join(user_preferences)
             print(llm_prompt)
             self.generation = self.llm.generate_content([llm_prompt])
+            print("Checklist Expert Result")
             print(self.generation.text)
             self.generation = get_json_from_generation(self.generation.text)
             return self.generation
         else:
             self.generation = json.loads(TEST_TRIP_CHECKLIST)
+            return self.generation
+
+class TripItineraryExpert(GeminiPro):
+    generation_config = {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 64,
+        "max_output_tokens": 16384,
+        "response_mime_type": "application/json",
+    }
+    generation = None
+    testing = False  # Returns a default text response.
+
+    def __init__(self, api_key=None, testing=False) -> None:
+        self.testing = testing
+        if not testing:
+            GeminiPro.initialize_model(api_key)
+            self.llm = genai.GenerativeModel(model_name=GeminiPro.model_name,
+                                generation_config=self.generation_config,
+                                system_instruction=TRIP_ITINERARY_EXPERT)
+
+    def generate_itinerary(self, trip_prompt):
+        if not self.testing:
+            # Format trip parameters neatly
+            llm_prompt = trip_prompt
+            
+            print(llm_prompt)
+            self.generation = self.llm.generate_content([llm_prompt])
+            self.generation = get_json_from_generation(self.generation.text)
+            print(self.generation)
+            return self.generation
+        else:
+            self.generation = TEST_TRIP_ITINERARY
             return self.generation
 
 class ProductImageToMetadataExpert(GeminiFlash):
@@ -142,16 +176,16 @@ class OutfitExpert(GeminiFlash):
                                 generation_config=self.generation_config,
                                 system_instruction=OUTFIT_EXPERT)
     
-    def generate_outfits(self, wardrobe_invetory = [], 
+    def generate_outfits(self, wardrobe_inventory = [], 
                          user_style_preferences = [], 
                          event_details = "casual", 
                          weather_data=None):
         if not self.testing:
-            llm_prompt = "Wardrobe Repository\n" + "\n".join(wardrobe_invetory) + "\n\nWeather Data\n" + weather_data + "\n\nEvent Details\n" + event_details + "\n\nStyle Preferences\n" + "\n".join(user_style_preferences) + "\n"
+            llm_prompt = "Wardrobe Repository\n" + "\n".join(wardrobe_inventory) + "\n\nWeather Data\n" + weather_data + "\n\nEvent Details\n" + event_details + "\n\nStyle Preferences\n" + "\n".join(user_style_preferences) + "\n"
             print(llm_prompt)
             self.generation = self.llm.generate_content([llm_prompt])
-            print(self.generation.text)
             self.generation = get_json_from_generation(self.generation.text)
+            print(self.generation)
             return self.generation
         else:
             self.generation = json.loads(TEST_OUTFIT)

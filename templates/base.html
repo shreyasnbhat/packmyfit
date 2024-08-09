@@ -1,18 +1,41 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+
+    <title>{% block title %}{% endblock %}</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+        .caveat-font {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-style: normal;
+            font-size: 36px;
+        }
+
         body {
             font-family: 'Google Sans', sans-serif;
             background-color: #ededed;
             color: #333;
             line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .content-container {
+            padding-top: 60px;
+            /* Match navbar height */
+            flex: 1; /* This will make the content take up the available space */
         }
 
         .container {
@@ -107,6 +130,11 @@
             font-weight: bold;
         }
 
+        .button-container a.bg-green-500 {
+            background-color: #68D391
+            /* Green color */
+        }
+
         .material-percentage {
             width: 100px;
             height: 20px;
@@ -126,14 +154,119 @@
             padding-top: 60px;
             /* Match navbar height */
         }
+
+        /* Home Page Specific Styles */
+        #hero {
+            background-color: #f2f2f2;
+            /* Subtle background color */
+            padding: 100px 0;
+            /* Increased padding */
+        }
+
+        #hero h1 {
+            font-size: 3rem;
+            /* Slightly smaller heading */
+            font-weight: 700;
+            /* Bold heading */
+            color: #333;
+            /* Darker text color */
+            margin-bottom: 1rem;
+            /* Reduced margin */
+            line-height: 1.2;
+            /* Tighter line height */
+        }
+
+        #hero p {
+            font-size: 1.25rem;
+            /* Larger paragraph text */
+            color: #555;
+            /* Slightly lighter text color */
+            margin-bottom: 2rem;
+            /* Increased margin */
+            line-height: 1.6;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            /* Center the button */
+        }
+
+        .button-container a {
+            background-color: #42BA96;
+            /* Use a vibrant green */
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* Add a subtle shadow */
+        }
+
+        .button-container a:hover {
+            background-color: #34a07e;
+            /* Darken green on hover */
+        }
+
+        /* Features Section Styling */
+        #features {
+            padding: 80px 0;
+            /* Increased padding */
+            background-color: white;
+        }
+
+        #features h2 {
+            font-size: 2.5rem;
+            /* Slightly smaller heading */
+            color: #333;
+            /* Darker text color */
+            margin-bottom: 2rem;
+            /* Increased margin */
+        }
+
+        .feature-card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            /* Increased padding */
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            /* Slight lift on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card img {
+            width: 80px;
+            /* Larger icons */
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #555;
+            line-height: 1.6;
+        }
     </style>
 </head>
 
 <body>
     <nav class="bg-gray-100 shadow-md fixed w-full z-50 top-0">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="{{ url_for('home') }}" class="text-xl sm:text-2xl font-bold font-serif text-gray-800">
-                Packr
+            <a href="{{ url_for('home') }}" class="caveat-font">
+                PackMyFit
             </a>
 
             <div class="flex items-center">
@@ -166,10 +299,16 @@
                         </div>
                     </div>
                     {% else %}
-                    <a href="#features" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Features</a>
-                    <a href="#how-it-works" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">How It Works</a>
-                    <a href="{{ url_for('auth.login') }}" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Login</a>
-                    <a href="{{ url_for('auth.signup') }}" class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Get Started</a>
+                    <a href="#features"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Features</a>
+                    <a href="#how-it-works"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">How It
+                        Works</a>
+                    <a href="{{ url_for('auth.login') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Sign In</a>
+                    <a href="{{ url_for('auth.signup') }}"
+                        class="px-3 py-2 rounded-md text-sm font-medium bg-green-500 text-white hover:bg-green-500">Get
+                        Started</a>
                     {% endif %}
                 </div>
 
@@ -202,7 +341,7 @@
                 <nav>
                     <li><a href="#features" class="block py-2 px-4 hover:bg-gray-100">Features</a></li>
                     <li><a href="#how-it-works" class="block py-2 px-4 hover:bg-gray-100">How It Works</a></li>
-                    <li><a href="{{ url_for('auth.login') }}" class="block py-2 px-4 hover:bg-gray-100">Login</a></li>
+                    <li><a href="{{ url_for('auth.login') }}" class="block py-2 px-4 hover:bg-gray-100">Sign In</a></li>
                     <li><a href="{{ url_for('auth.signup') }}" class="block py-2 px-4 hover:bg-gray-100">Get Started</a>
                     </li>
                     {% endif %}
@@ -223,6 +362,14 @@
     <div class="content-container">
         {% block content %}{% endblock %}
     </div>
+
+    <footer class="bg-gray-100 py-4 mt-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm text-gray-600">
+                Created by Shreyas Bhat
+            </p>
+        </div>
+    </footer>
 </body>
 
 </html>

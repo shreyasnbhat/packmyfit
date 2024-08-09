@@ -10,6 +10,47 @@ import io
 from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
 import pandas as pd
 
+def is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError as e:
+        return False
+    return True
+
+def get_trip_prompt(trip_details):
+    return f"""
+Trip Parameters
+Departure City: {trip_details['departure_city']}
+Destination City: {trip_details['destination_city']}
+Start Date: {trip_details['start_date']}
+End Date: {trip_details['end_date']}
+Laundry Service Available: {trip_details['laundry_service_available']}
+Working Remotely: {trip_details['working_remotely']}
+"""
+
+def trip_itineary_to_textarea_string(trip_itinerary):
+  """Converts a JSON itinerary to a hierarchical string for a textarea.
+
+  Args:
+    data: A JSON object representing the itinerary.
+
+  Returns:
+    A hierarchical string suitable for rendering in a textarea.
+  """
+
+  output = ""
+  for day, activities in trip_itinerary.items():
+    output += f"## {day}\n"  # Day as a heading
+    for i, activity in enumerate(activities):
+      output += f"{i+1}. {activity.get('activity', '')}\n"
+      for key in ['time', 'description', 'address', 'duration', 'transportation', 'cost']:
+        value = activity.get(key)
+        if value:
+          output += f"    - {key[0].upper() + key[1:]}: {value}\n"
+      output += "\n"
+    output += "\n"
+  return output
+
 def item_repository_csv_to_json(csv_file: str) -> List[Dict[str, Any]]:
   """Reads a CSV file and converts it to JSON.
 
@@ -53,6 +94,10 @@ def get_json_from_generation(content: str) -> Any:
     json_data = None
     try:
         output_stripped = re.sub(r'```(?:json|JSON)\n|\n```', '', content)
+        # Handle the extra double quote edge case
+        output_stripped = output_stripped.strip()  # Remove leading/trailing whitespace
+        if output_stripped.endswith('"'):
+            output_stripped = output_stripped[:-1]
         json_data = json.loads(output_stripped)
     except json.JSONDecodeError:
         raise json.JSONDecodeError("Failed to parse JSON from generation.")

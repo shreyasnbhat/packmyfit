@@ -17,7 +17,7 @@ import os
 from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
 import json
 import re
-from utils import get_image_path_from_item_image_id, upload_item_images
+from utils import get_image_path_from_item_image_id, upload_item_images, is_json, trip_itineary_to_textarea_string
 from collections import defaultdict
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,15 +36,21 @@ def trips():
     if request.method == 'POST':
         departure_city = request.form['departure_city']
         destination_city = request.form['destination_city']
-        start_date_str = request.form['start_date']  # Get the date string
-        end_date_str = request.form['end_date']  # Get the date string
+        start_date_str = request.form['start_date']
+        end_date_str = request.form['end_date']
         laundry_service_available = request.form['laundry_service_available'] == 'yes'
         working_remotely = request.form['working_remotely'] == 'yes'
-        itinerary = request.form['itinerary']
+        purpose = request.form['purpose']
+
+        purpose_words = purpose.split('_')
+        readable_purpose_words = ' '.join([word.capitalize() for word in purpose_words])
 
         # Convert date strings to datetime objects
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
         end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+        # Find weather information.
+        forecast_data_daily = weather_forecast.get_forecast_data_daily(city=destination_city)
 
         # Generate trip object and add it to the list of trips.
         trip = Trip(
@@ -55,10 +61,10 @@ def trips():
             end_date=end_date,
             laundry_service_available=laundry_service_available,
             working_remotely=working_remotely,
-            itinerary=itinerary,
-            misc_information=""
+            purpose=readable_purpose_words,
+            weather=json.dumps(forecast_data_daily)
         )
-        current_user.trips.append(trip)        
+        current_user.trips.append(trip)
         db.session.commit()
 
     return render_template('trip_manager_main.html', 
@@ -92,8 +98,18 @@ def trip(trip_id):
                 })
         for misc_info in trip_checklist.misc_information:
             checklists[-1]["misc_information"].append(misc_info.misc_information)
-    print(checklists)
-    return render_template('trip_display.html', trip=trip, checklists=checklists)
+
+    try:
+        trip_weather = json.loads(trip.weather)
+    except:
+        trip_weather = {}
+
+    # Read JSON if there is a generative AI itinerary.
+    generated_itinerary_json = None
+    if trip.itinerary_json:
+        generated_itinerary_json = json.loads(trip.itinerary_generated)
+
+    return render_template('trip_display.html', trip=trip, generated_itinerary_json=generated_itinerary_json, trip_weather=trip_weather, checklists=checklists)
 
 @trip_manager_bp.route('/delete/trip_id:<int:trip_id>', methods=['POST'])
 @login_required
@@ -118,9 +134,37 @@ def delete_trip(trip_id):
 
     return redirect(url_for('trip_manager.trips'))
 
-@trip_manager_bp.route('/trip_id:<int:trip_id>/gen_checklist', methods=['POST'])
+@trip_manager_bp.route('/trip_id:<int:trip_id>/save_trip_itinerary', methods=['POST'])
 @login_required
-def gen_checklist(trip_id):
+def save_itinerary(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+
+    itinerary = request.form['itinerary']
+    trip.itinerary = itinerary
+
+    db.session.add(trip)
+    db.session.commit()
+    return redirect(url_for('trip_manager.trip', trip_id=trip_id))
+
+
+@trip_manager_bp.route('/trip_id:<int:trip_id>/generate_trip_itinerary', methods=['POST'])
+@login_required
+def generate_itinerary(trip_id):
+    trip = Trip.query.get_or_404(trip_id)
+
+    # Call the itinerary expert and populate the itinerary fields.
+    generated_itinerary = trip_itinerary_expert.generate_itinerary(trip_prompt=str(trip))
+    trip.itinerary = trip_itineary_to_textarea_string(generated_itinerary)
+    trip.itinerary_generated = json.dumps(generated_itinerary)
+
+    db.session.add(trip)
+    db.session.commit()
+    return redirect(url_for('trip_manager.trip', trip_id=trip_id))
+
+
+@trip_manager_bp.route('/trip_id:<int:trip_id>/generate_checklist', methods=['POST'])
+@login_required
+def generate_checklist(trip_id):
     trip = Trip.query.get_or_404(trip_id)
     
     # Query and format the User Item Repository.
@@ -133,11 +177,11 @@ def gen_checklist(trip_id):
     for preference in current_user.packing_preferences:
         user_preferences.append(str(preference))
 
-    weather_data = weather_forecast.get_weather_data(trip.destination_city)
+    forecast_table = weather_forecast.get_forecast_table_from_data(json.loads(trip.weather)) or None
     expert_result = trip_checklist_expert.generate_trip_checklist(item_repository=item_repository,
-                                                                    user_preferences=user_preferences,
-                                                                    trip_prompt=str(trip),
-                                                                    weather_data=weather_data)
+                                                                user_preferences=user_preferences,
+                                                                trip_prompt=str(trip),
+                                                                weather_data=forecast_table)
     # Store the generated checklist.
     generated_trip_checklist = TripChecklist(
         trip_id=trip_id,
@@ -186,25 +230,25 @@ def events():
     if request.method == 'POST':
         event_details = request.form.get('event_details')
         city = request.form.get('city')
-        date = request.form.get('date')
-        time = request.form.get('time')
+        datetime_str = request.form.get('datetime')
 
         if city is None:
             city = "San Francisco"  # Default City
 
-        if not all([event_details, date, time]): 
-            flash('Please provide Event Details, City, Date, and Time!', 'danger')
-            return redirect(url_for('outfit_manager.events')) 
+        if not all([event_details, datetime_str]):
+            flash('Please provide Event Details, City, and Date & Time!', 'danger')
+            return redirect(url_for('outfit_manager.events'))
 
         try:
-            # Combine date and time into a single datetime object.
-            datetime_str = f"{date} {time}"
-            event_datetime = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M')
+            # Parse the combined datetime string.
+            event_datetime = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M')
+            event_date = event_datetime.date()
         except ValueError:
             flash('Invalid date or time format!', 'danger')
             return redirect(url_for('outfit_manager.events'))
+        forecast_data_hourly = weather_forecast.get_forecast_data_hourly(city = city, date_filter = event_date)
 
-        event = Event(description=event_details, city=city, datetime=event_datetime)
+        event = Event(description=event_details, city=city, datetime=event_datetime, weather=json.dumps(forecast_data_hourly) or None)
         current_user.events.append(event)
         db.session.add(event)
         db.session.commit()
@@ -233,27 +277,55 @@ def event(event_id):
         outfit_data['pieces'] = [{'item': Item.query.get(outfit_item.item_id), 'reason': outfit_item.reason} for outfit_item in outfit.outfit_items]
         outfits_data.append(outfit_data)
 
-    return render_template("outfit_display.html", event=event, outfits=outfits_data)
+    # Event Weather for an event will be hourly.
+    try:
+        event_weather_hourly = json.loads(event.weather)
+    except:
+        event_weather_hourly = {}
+    return render_template("outfit_display.html", event=event, event_weather_hourly = event_weather_hourly, outfits=outfits_data)
+
+
+@outfit_manager_bp.route('/event_id:<int:event_id>/delete', methods=['POST'])
+@login_required
+def delete_event(event_id):
+    event = db.session.get(Event, event_id)
+
+    if event:
+        if event.user_id != current_user.id:
+            flash('You are not authorized to delete this event!', 'danger')
+            return redirect(url_for('outfit_manager.events'))
+
+        try:
+            db.session.delete(event)
+            db.session.commit()  # Commit changes here
+            db.session.refresh(current_user)
+            flash('Trip deleted successfully.', 'success') 
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error deleting trip: {e}', 'danger')
+    else:
+        flash('Event not found!', 'danger')
+
+    return redirect(url_for('outfit_manager.events'))
+
 
 @outfit_manager_bp.route('/event_id:<int:event_id>/generate_outfits', methods=['POST'])
 @login_required
 def generate_outfits(event_id):
     event = db.session.get(Event, event_id)
-    
-    # Check weather at event city.
-    weather_data = weather_forecast.get_weather_data(city=event.city)
+    forecast_table = weather_forecast.get_forecast_table_from_data(forecast_data=json.loads(event.weather) or None)
 
     # Query the Item Repository to obtain the user's Wardrobe Inventory.
-    wardrobe_inventory = [str(item) for item in current_user.items if item.category in ["Clothes", "Footwear"]]
+    wardrobe_inventory = [str(item) for item in current_user.items]
 
     # Collect the user's style preferences.
     user_style_preferences = current_user.style_preferences
 
     # Query the expert to obtain the outfits.
-    expert_result = outfit_expert.generate_outfits(wardrobe_inventory,
-                        user_style_preferences,
-                        event.description,
-                        weather_data)
+    expert_result = outfit_expert.generate_outfits(wardrobe_inventory=wardrobe_inventory,
+                        user_style_preferences=user_style_preferences,
+                        event_details=event.description,
+                        weather_data=forecast_table)
     
     # Delete all existing outfits that were generated for this event.
     try:
@@ -375,11 +447,50 @@ def item(item_id):
         materials = json.loads(materials)
     primary_item_image_path = get_image_path_from_item_image_id(db, item_image_id=item_repository_item.primary_image_id)
 
+    item_references = {}
+    item_references["events"] = (
+        db.session.query(OutfitItem)
+        .join(Outfit)  # Join OutfitItem with Outfit
+        .filter(OutfitItem.item_id == item_id)
+        .distinct(Outfit.event_id)  # Count distinct events
+        .count()
+    )
+    item_references["outfits"] = db.session.query(OutfitItem).filter_by(item_id=item_id).count()
+    item_references["checklists"] = db.session.query(TripChecklistItem).filter_by(item_id=item_id).count() 
+
+
     return render_template('item_display.html', 
                            item=item_repository_item,
                            primary_image_path=primary_item_image_path,
                            metadata=None,
-                           materials=materials)
+                           materials=materials,
+                           item_references=item_references)
+
+@item_repository_bp.route('/item_id:<int:item_id>/delete', methods=['POST'])
+@login_required
+def delete_item(item_id):
+    item = db.session.get(Item, item_id)
+
+    # TODO(shbhat): The Item may be referenced in several outfits, checklists. 
+    # Delete all of those.
+
+    if item:
+        if item.user_id != current_user.id:
+            flash('You are not authorized to delete this item!', 'danger')
+            return redirect(url_for('item_repository.items'))
+
+        try:
+            db.session.delete(item)
+            db.session.commit()  # Commit changes here
+            db.session.refresh(current_user)
+            flash('Item deleted successfully.', 'success') 
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error deleting item: {e}', 'danger')
+    else:
+        flash('Item not found!', 'danger')
+
+    return redirect(url_for('item_repository.items'))
 
 @item_repository_bp.route('/item_id:<int:item_id>/upload_image', methods=['POST'])
 @login_required

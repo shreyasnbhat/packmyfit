@@ -1,20 +1,19 @@
 {% extends "base.html" %}
 
 {% block title %}My Outfits{% endblock %}
-{% block central_title %} Packr: Your Outfit Hub {% endblock %}
+{% block central_title %} PackMyFit: Your Outfit Hub {% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold mb-4">Add a New Outfit Suggestion</h2>
+                <h2 class="text-2xl font-semibold mb-4">Add a New Outfit</h2>
                 <form method="POST" action="{{ url_for('outfit_manager.events') }}">
                     <div class="mb-4">
-                        <label for="event_details" class="block text-gray-700 text-sm font-medium mb-2">Event
-                            Details</label>
-                        <textarea id="event_details" name="event_details" rows="3"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <label for="event_details" class="block text-gray-700 text-sm font-medium mb-2">Event Details (e.g., Wedding, Hiking)</label>
+                        <input type="text" id="event_details" name="event_details" placeholder="Enter your event details.."
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -23,40 +22,48 @@
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label for="date" class="block text-gray-700 text-sm font-medium mb-2">Date</label>
-                            <input type="date" id="date" name="date" value="{{ default_date }}"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label for="time" class="block text-gray-700 text-sm font-medium mb-2">Time</label>
-                            <input type="time" id="time" name="time"
+                            <label for="datetime" class="block text-gray-700 text-sm font-medium mb-2">Date & Time</label>
+                            <input type="datetime-local" id="datetime" name="datetime" value="{{ default_datetime }}"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
                     <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md mt-6">
-                        Generate
+                        class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-md mt-6">
+                        Create Outfit
                     </button>
                 </form>
             </div>
         </div>
         <div>
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-semibold mb-4">Your Outfits</h2>
+                <h2 class="text-2xl font-semibold mb-4">Your Planned Outfits</h2>
                 <ul>
                     {% for event in events %}
                     <li class="border-b border-gray-200 py-3">
-                        <a href="{{url_for('outfit_manager.event', event_id=event.id)}}" class="flex justify-between items-center hover:bg-gray-100 px-2 py-2 rounded-md">
-                            <div>
-                                <h3 class="font-medium">
-                                    Outfit for {{ event.description }}
-                                </h3>
-                                <p class="text-sm text-gray-500">
-                                    {{ event.city }} - {{ event.datetime.strftime('%Y-%m-%d %H:%M') }}
-                                </p>
-                            </div>
-                        </a>
+                        <div class="flex justify-between items-center hover:bg-gray-100 px-2 py-2 rounded-md">
+                            <a href="{{url_for('outfit_manager.event', event_id=event.id)}}" class="flex-grow">
+                                <div>
+                                    <h3 class="font-medium">
+                                        {{ event.description }} in {{ event.city }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500">
+                                        {{ event.datetime.strftime('%Y-%m-%d %H:%M') }}
+                                    </p>
+                                </div>
+                            </a>
+                            <form method="POST" action="{{ url_for('outfit_manager.delete_event', event_id=event.id) }}"
+                                class="ml-4 rounded-full hover:bg-red-100 p-2 transition-all duration-200">
+                                <button type="submit"
+                                    class="text-red-500 hover:text-red-700 focus:outline-none rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>

@@ -5,73 +5,124 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-lg shadow-md p-6 mb-8"> 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div class="flex flex-col">
       <div>
-        <h3 class="text-xl font-bold mb-2">Outfit for: {{ event.description }}</h3>
-        <p class="text-gray-700">City: {{ event.city }}</p> 
+        <h3 class="text-xl font-bold mb-4">Event Details</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-align-left text-blue-500 mr-3"></i>
+              <p class="text-gray-800 font-medium">Description:</p>
+            </div>
+            <p class="text-gray-700">{{ event.description }}</p>
+          </div>
+          <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-map-marker-alt text-green-500 mr-3"></i>
+              <p class="text-gray-800 font-medium">City:</p>
+            </div>
+            <p class="text-gray-700">{{ event.city }}</p>
+          </div>
+          <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-calendar-alt text-red-500 mr-3"></i>
+              <p class="text-gray-800 font-medium">Date:</p>
+            </div>
+            <p class="text-gray-700">{{ event.datetime.strftime('%B %d, %Y') }}</p>
+          </div>
+          <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+            <div class="flex items-center mb-4">
+              <i class="fas fa-clock text-yellow-500 mr-3"></i>
+              <p class="text-gray-800 font-medium">Time:</p>
+            </div>
+            <p class="text-gray-700">{{ event.datetime.strftime('%I:%M %p') }}</p>
+          </div>
+        </div>
+        {% if event_weather_hourly %}
+        <br>
+        <h3 class="text-lg font-bold mb-2">Weather Forecast</h3>
+        <div class="flex flex-col md:flex-row overflow-x-auto justify-center">
+          {% for day in event_weather_hourly | unique(attribute='time') %}
+          <div class="bg-white rounded-lg shadow-md p-4 mb-4 md:mr-4 flex-shrink-0">
+            <p class="font-bold text-lg text-center mb-2">{{ day.time }}</p>
+            <div class="flex justify-center items-center">
+              <img src="http://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="{{ day.weather }}"
+                class="w-16 h-16">
+            </div>
+            <p class="text-center text-gray-700 font-medium">{{ day.weather }}</p>
+            <div class="flex justify-center items-center mt-2">
+              <p class="text-2xl font-bold">{{ day.max_temp }}°C</p>
+              <p class="text-gray-600 ml-2"> / {{ day.min_temp }}°C</p>
+            </div>
+            <p class="text-center text-gray-600 mt-1">Humidity: {{ day.humidity }}%</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
-      <div>
+
+      <div class="w-full mt-4">
         <form method="POST" action="{{ url_for('outfit_manager.generate_outfits', event_id=event.id) }}">
           <button type="submit"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
             Generate Outfits
           </button>
         </form>
       </div>
     </div>
-
-    {% if outfits %}
-      <div class="mt-6"> 
-        {% for outfit in outfits %}
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <div class="flex flex-col lg:flex-row"> 
-              <div class="lg:w-3/4 lg:pr-8">
-                <h4 class="text-xl font-bold mb-2">Outfit {{ loop.index }}: {{ outfit.style }}</h4> 
-                <p class="text-gray-700 mb-4">{{ outfit.description }}</p>
-
-                <h5 class="text-lg font-semibold mb-2">Items:</h5>
-                <ul class="list-disc pl-5 mb-6"> 
-                  {% for item_data in outfit.pieces %}
-                    <li>
-                      <a href="{{ url_for('item_repository.item', item_id=item_data.item.id) }}" class="hover:underline">
-                        {{ item_data.item.name }} 
-                      </a> -  
-                      <span class="text-gray-600">{{ item_data.reason }}</span>
-                    </li>
-                  {% endfor %}
-                </ul>
-
-                {% if outfit.missing %}
-                  <div class="border border-yellow-400 rounded-md p-4 bg-yellow-50 mb-6">
-                    <p class="font-semibold text-yellow-800 mb-2">Missing Items:</p>
-                    <ul class="list-disc pl-5">
-                      {% for missing_item in outfit.missing %}
-                        <li>
-                          {{ missing_item.name }} ({{ missing_item.category }}) - {{ missing_item.reason }}
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
-              </div> 
-
-              <div class="lg:w-1/4 lg:pl-8">
-                <h5 class="text-lg font-semibold mb-2">Color Palette:</h5>
-                <div class="flex space-x-2">
-                  {% for color in outfit.colorPalette %}
-                    <div class="w-6 h-6 rounded-full" style="background-color: {{ color }};"></div>
-                  {% endfor %}
-                </div>
-
-                <h5 class="text-lg font-semibold mt-6 mb-2">Image Prompt:</h5>
-                <p class="text-gray-700">{{ outfit.imagePrompt }}</p> 
-              </div>
-            </div>
-          </div> 
-        {% endfor %}
-      </div> 
-    {% endif %}
   </div>
+
+  {% if outfits %}
+  <div class="mt-6">
+    {% for outfit in outfits %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <div class="flex flex-col lg:flex-row">
+        <div class="lg:w-3/4 lg:pr-8">
+          <h4 class="text-xl font-bold mb-2">Outfit {{ loop.index }}: {{ outfit.style }}</h4>
+          <p class="text-gray-700 mb-4">{{ outfit.description }}</p>
+
+          <h5 class="text-lg font-semibold mb-2">Items:</h5>
+          <ul class="list-disc pl-5 mb-6">
+            {% for item_data in outfit.pieces %}
+            <li>
+              <a href="{{ url_for('item_repository.item', item_id=item_data.item.id) }}" class="hover:underline">
+                {{ item_data.item.name }}
+              </a> -
+              <span class="text-gray-600">{{ item_data.reason }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+
+          {% if outfit.missing %}
+          <div class="border border-yellow-400 rounded-md p-4 bg-yellow-50 mb-6">
+            <p class="font-semibold text-yellow-800 mb-2">Missing Items:</p>
+            <ul class="list-disc pl-5">
+              {% for missing_item in outfit.missing %}
+              <li>
+                {{ missing_item.name }} ({{ missing_item.category }}) - {{ missing_item.reason }}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="lg:w-1/4 lg:pl-8">
+          <h5 class="text-lg font-semibold mb-2">Color Palette:</h5>
+          <div class="flex space-x-2">
+            {% for color in outfit.colorPalette %}
+            <div class="w-6 h-6 rounded-full" style="background-color: {{ color }};"></div>
+            {% endfor %}
+          </div>
+
+          <h5 class="text-lg font-semibold mt-6 mb-2">Image Prompt:</h5>
+          <p class="text-gray-700">{{ outfit.imagePrompt }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

@@ -16,7 +16,7 @@
                                 <img src="{{ url_for('static', filename=primary_image_path) }}"
                                     alt="{{ primary_image_path }}" class="w-full h-full object-cover">
                             </a>
-                        {% endif %}
+                            {% endif %}
                         </div>
                         <div>
                             <h2 class="text-3xl font-bold">{{ item.name }}</h2>
@@ -26,8 +26,7 @@
 
 
                     <hr class="my-6 border-t border-gray-300">
-
-                    <div class="mt-4">
+                    <div class="container mx-auto p-2">
                         <p class="text-xl font-semibold">Description</p>
                         <p class="text-gray-700">
                             <span class="font-semibold">Quantity:</span> {{ item.quantity }}
@@ -42,7 +41,7 @@
 
                     {% if item.care_instruction %}
                     <hr class="my-6 border-t border-gray-300">
-                    <div class="mt-4">
+                    <div class=container mx-auto p-2">
                         <p class="text-xl font-semibold">Care Instructions</p>
                         <p>{{ item.care_instruction }}</p>
                     </div>
@@ -67,27 +66,43 @@
 
                     {% if metadata %}
                     <hr class="my-6 border-t border-gray-300">
-                    <div class="mt-4">
+                    <div class="container mx-auto p-2">
                         <p class="text-xl font-semibold">Metadata</p>
                         <p>{{ metadata }}</p>
                     </div>
                     {% endif %}
 
+                    <!-- <hr class="my-6 border-t border-gray-300">
+                    <div class="container mx-auto p-2">
+                            <p class="text-xl font-semibold">References</p>
+                            <ul class="list-none">
+                                <li class="mb-2">
+                                    <span class="font-semibold">Events:</span> {{ item_references.events }}
+                                </li>
+                                <li class="mb-2">
+                                    <span class="font-semibold">Outfits:</span> {{ item_references.outfits }}
+                                </li>
+                                <li>
+                                    <span class="font-semibold">Checklists:</span> {{ item_references.checklists }}
+                                </li>
+                            </ul>
+                    </div> -->
+
                     <hr class="my-6 border-t border-gray-300">
                     <div class="mt-4 flex space-x-4">
                         <form method="POST"
                             action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}"
-                            class="w-1/2"> 
+                            class="w-1/2">
                             <button type="submit"
-                                class="w-full px-6 py-2 rounded-md font-semibold text-white bg-blue-500 hover:bg-blue-700 transition duration-300">
+                                class="w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300">
                                 <span class="mr-2">✨</span> Generate Metadata
                             </button>
                         </form>
                         <form method="POST" enctype="multipart/form-data"
-                            action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}"
-                            class="w-1/2">
+                            action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}" class="w-1/2">
                             <input type="hidden" name="item_id" value="{{ item.id }}">
-                            <label for="images" class="flex items-center justify-center w-full px-6 py-2 rounded-md font-semibold text-white bg-blue-500 hover:bg-blue-700 transition duration-300 cursor-pointer">
+                            <label for="images"
+                                class="flex items-center justify-center w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300 cursor-pointer">
                                 <span class="mr-2">+</span> Add Image
                                 <input type="file" name="images" id="images" class="hidden" accept="image/*" multiple>
                             </label>

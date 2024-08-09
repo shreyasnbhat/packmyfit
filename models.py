@@ -48,8 +48,10 @@ class Trip(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     laundry_service_available = db.Column(db.Boolean, nullable=False)
     working_remotely = db.Column(db.Boolean, nullable=False)
-    itinerary = db.Column(db.Text, nullable=True)
-    misc_information = db.Column(db.Text, nullable=True)
+    weather = db.Column(db.Text, nullable=True)
+    purpose = db.Column(db.Text, nullable=True)
+    itinerary = db.Column(db.Text, default="", nullable=True) # User entered string.
+    itinerary_json = db.Column(db.Text, nullable=True) # AI generated itinerary.
 
     checklists = db.relationship('TripChecklist', cascade="all, delete-orphan", backref='trip_checklists', lazy=True)
 
@@ -62,6 +64,7 @@ Start Date: {self.start_date}
 End Date: {self.end_date}
 Laundry Service Available: {self.laundry_service_available}
 Working Remotely: {self.working_remotely}
+Purpose: {self.purpose}
 Itinerary: {self.itinerary}
 """
     
@@ -108,10 +111,11 @@ class Event(db.Model):
     description = db.Column(db.Text, nullable=False)
     city = db.Column(db.String(255), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
+    weather = db.Column(db.Text, nullable=True)
     outfits = db.relationship('Outfit', backref='event', lazy=True)
 
     def __repr__(self):
-        return f"<Event event_id={self.event_id}, description='{self.description}'>"
+        return f"<Event id={self.id}, description='{self.description}'>"
 
 class Outfit(db.Model):
     __tablename__ = 'outfit'
@@ -125,7 +129,7 @@ class Outfit(db.Model):
     missing_items = db.relationship('MissingItem', backref='outfit', lazy=True)
 
     def __repr__(self):
-        return (f"<Outfit outfit_id={self.outfit_id}, event_id={self.event_id}, "
+        return (f"<Outfit outfit_id={self.id}, event_id={self.event_id}, "
                 f"style='{self.style}'>")
 
 class OutfitItem(db.Model):
@@ -136,7 +140,7 @@ class OutfitItem(db.Model):
     reason = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
-        return (f"<OutfitItem outfit_item_id={self.outfit_item_id}, "
+        return (f"<OutfitItem outfit_item_id={self.id}, "
                 f"outfit_id={self.outfit_id}, item_id={self.item_id}>")
 
 class MissingItem(db.Model):
@@ -148,7 +152,7 @@ class MissingItem(db.Model):
     reason = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
-        return (f"<MissingItem missing_item_id={self.missing_item_id}, "
+        return (f"<MissingItem missing_item_id={self.id}, "
                 f"outfit_id={self.outfit_id}, name='{self.name}'>")
 
 class UserStylePreference(db.Model):

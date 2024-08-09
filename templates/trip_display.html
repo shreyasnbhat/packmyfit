@@ -1,83 +1,157 @@
 {% extends "base.html" %}
 
 {% block title %}Trip Details{% endblock %}
-{% block central_title %}Packr: Trip Details{% endblock %}
+{% block central_title %}PackMyFit: Trip Details{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Trip Details</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Trip Dates and Route -->
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-4 text-white shadow-md">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="text-center">
-                        <p class="text-xs uppercase">Start</p>
-                        <p class="text-lg font-bold">{{ trip.start_date.strftime('%b %d, %Y') }}</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Trip Dates and Information -->
+            <div class="md:col-span-1">
+                <!-- Trip Dates -->
+                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg p-4 text-white shadow-md mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-center">
+                            <p class="text-sm font-medium uppercase">Start</p>
+                            <p class="text-xl font-bold">{{ trip.start_date.strftime('%b %d, %Y') }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium uppercase">End</p>
+                            <p class="text-xl font-bold">{{ trip.end_date.strftime('%b %d, %Y') }}</p>
+                        </div>
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                    <div class="text-center">
-                        <p class="text-xs uppercase">End</p>
-                        <p class="text-lg font-bold">{{ trip.end_date.strftime('%b %d, %Y') }}</p>
+                    <div class="flex justify-between items-center">
+                        <div class="text-center">
+                            <p class="text-sm font-medium uppercase">From</p>
+                            <p class="text-xl font-bold">{{ trip.departure_city }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium uppercase">To</p>
+                            <p class="text-xl font-bold">{{ trip.destination_city }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <div class="text-center">
-                        <p class="text-xs uppercase">From</p>
-                        <p class="text-lg font-bold">{{ trip.departure_city }}</p>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                    </svg>
-                    <div class="text-center">
-                        <p class="text-xs uppercase">To</p>
-                        <p class="text-lg font-bold">{{ trip.destination_city }}</p>
+
+                <!-- Laundry and Remote Work -->
+                <div class="bg-gray-100 rounded-lg p-3 flex flex-col justify-between mb-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-600">Laundry Service</p>
+                                <p class="font-semibold">{{ "Available" if trip.laundry_service_available else "Not
+                                    Available" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-600">Working Remotely</p>
+                                <p class="font-semibold">{{ "Yes" if trip.working_remotely else "No" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="text-sm text-gray-600">Purpose</p>
+                                <p class="font-semibold">{{ trip.purpose }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Trip Information -->
-            <div class="bg-gray-100 rounded-lg p-4 flex flex-col justify-between">
-                <div class="flex items-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                    <div>
-                        <p class="text-sm text-gray-600">Laundry Service</p>
-                        <p class="font-semibold">{{ "Available" if trip.laundry_service_available else "Not Available" }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <div>
-                        <p class="text-sm text-gray-600">Working Remotely</p>
-                        <p class="font-semibold">{{ "Yes" if trip.working_remotely else "No" }}</p>
-                    </div>
+            <div class="flex-grow md:col-span-2">
+                <!-- Itinerary -->
+                <div class="bg-gray-100 rounded-lg p-3 flex flex-col justify-between mb-4">
+                    <!-- Save Itinerary Form -->
+                    <form id="save-itinerary-form" method="POST"
+                        action="{{ url_for('trip_manager.save_itinerary', trip_id=trip.id) }}" class="flex flex-col">
+                        <textarea id="itinerary-textarea" name="itinerary"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md h-48 focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+                            {% if not trip.itinerary %} placeholder="Enter your itinerary here..." {% endif
+                            %}>{{ trip.itinerary }}</textarea>
+                        <button type="submit" id="save-itinerary-button"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md mt-2">Save
+                            Itinerary</button>
+                    </form>
+
+                    <!-- Generate Itinerary Form -->
+                    <form id="generate-itinerary-form" method="POST"
+                        action="{{ url_for('trip_manager.generate_itinerary', trip_id=trip.id) }}"
+                        class="flex flex-col mt-2">
+                        <button type="submit" id="generate-itinerary-button"
+                            class="bg-green-500 hover:bg-green-800 text-white font-medium py-2 px-4 rounded-md">Generate
+                            Itinerary</button>
+                    </form>
                 </div>
             </div>
         </div>
 
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Weather</h2>
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <!-- Weather Forecast -->
+            <div class="w-full">
+                <!-- Weather Forecast -->
+                {% if trip_weather %}
+                <div class="flex flex-col md:flex-row overflow-x-auto justify-center">
+                    {% for day in trip_weather %}
+                    <div class="bg-white rounded-lg shadow-md p-4 mb-4 md:mr-4 flex-shrink-0">
+                        <p class="font-bold text-lg text-center mb-2">{{ day.date }}</p>
+                        <div class="flex justify-center items-center">
+                            <img src="http://openweathermap.org/img/wn/{{ day.icon }}@2x.png" alt="{{ day.weather }}"
+                                class="w-16 h-16">
+                        </div>
+                        <p class="text-center text-gray-700 font-medium">{{ day.weather }}</p>
+                        <div class="flex justify-center items-center mt-2">
+                            <p class="text-2xl font-bold">{{ day.max_temp[0] }}°C - {{ day.max_temp[1] }}°C</p>
+                        </div>
+                        <div class="flex justify-center items-center mt-1">
+                            <p class="text-gray-600">Low: {{ day.min_temp[0] }}°C - {{ day.min_temp[1] }}°C</p>
+                        </div>
+                        <p class="text-center text-gray-600 mt-1">Humidity: {{ day.humidity[0] }}% - {{
+                            day.humidity[1] }}%
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+
         <!-- Generate Checklist Button -->
         <form id="generate_checklist_form" class="mt-6" method="POST"
-              action="{{ url_for('trip_manager.gen_checklist', trip_id = trip.id) }}">
+            action="{{ url_for('trip_manager.generate_checklist', trip_id = trip.id) }}">
             <input type="hidden" name="trip_id" value="{{ trip.id }}">
             <button id="generate_checklist_button"
-                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-101"
-                    type="submit">
+                class="w-full bg-green-500 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-101"
+                type="submit">
                 Generate Checklist
             </button>
         </form>
     </div>
 
+    {% if checklists %}
     <div class="bg-white rounded-lg shadow-md p-6">
         <h2 class="text-2xl font-semibold mb-4">Checklist</h2>
 
-        {% if checklists %}
+
         <div class="mb-4">
             <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="checklist-tabs"
                 data-tabs-toggle="#checklist-tabs-content" role="tablist">
@@ -130,8 +204,8 @@
             </ul>
         </div>
         {% endif %}
-        {% endif %}
     </div>
+    {% endif %}
 
 </div>
 

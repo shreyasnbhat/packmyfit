@@ -1,4 +1,4 @@
-from llms import TripChecklistExpert, ProductImageToMetadataExpert, OutfitExpert
+from llms import TripChecklistExpert, ProductImageToMetadataExpert, OutfitExpert, TripItineraryExpert
 from constants import GEMINI_API_KEY
 from flags import *
 
@@ -6,3 +6,4 @@ from flags import *
 trip_checklist_expert = TripChecklistExpert(api_key=GEMINI_API_KEY, testing=LLM_TESTING)
 product_image_to_metadata_expert = ProductImageToMetadataExpert(api_key=GEMINI_API_KEY, testing=LLM_TESTING)
 outfit_expert = OutfitExpert(api_key=GEMINI_API_KEY, testing=LLM_TESTING)
+trip_itinerary_expert = TripItineraryExpert(api_key=GEMINI_API_KEY, testing=LLM_TESTING)

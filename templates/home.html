@@ -1,89 +1,146 @@
 {% extends "base.html" %}
 
-{% block title %}Packr - Revolutionizing Your Travel & Style{% endblock %}
+{% block title %}PackMyFit - Revolutionizing Your Travel & Style{% endblock %}
 
 {% block central_title %}
 {% endblock %}
 
 {% block content %}
-<section id="hero" class="bg-cover bg-center py-24 relative"
-    style="background-image: url('{{ url_for('static', filename='homepage.jpg') }}')">
-    <div class="container mx-auto px-4 text-center text-white relative z-10">
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6 drop-shadow-lg">
-            Conquer Your Closet & Your Trips
-        </h1>
-        <p class="text-lg md:text-xl lg:text-2xl mb-8 drop-shadow">
-            Packr isn't just another packing list app. We help you plan killer outfits for any event, ensuring you
-            always look and feel your best - whether you're traveling the world or painting the town red.
-        </p>
-        <a href="{{ url_for('auth.signup') }}"
-            class="bg-yellow hover:bg-gray-100 text-[#42BA96] font-bold py-3 px-8 rounded-full transition duration-300 ease-in-out inline-block">Start
-            Styling & Packing</a>
+<div class="bg-white"
+    style="background-image: url('{{ url_for('static', filename='homepage.jpg') }}'); background-size: cover; background-position: center;">
+    <div class="relative isolate px-6 pt-14 lg:px-8">
+        <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+            aria-hidden="true">
+            <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+                style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+            </div>
+        </div>
+        <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Pack Like a Pro, Without the
+                    Fuss
+                </h1>
+                <p class="mt-6 text-lg leading-8 text-white">The smartest way to organize your wardrobe, create packing
+                    lists, and plan perfect outfits for any trip or event.</p>
+                <div class="mt-10 flex items-center justify-center gap-x-6">
+                    <a href="{{ url_for('auth.signup') }}"
+                        class="rounded-md bg-green-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get
+                        started</a>
+                    <a href="#features" class="text-sm font-semibold leading-6 text-white">Learn more <span
+                            aria-hidden="true">→</span></a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
+            aria-hidden="true">
+            <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+                style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)">
+            </div>
+        </div>
     </div>
-</section>
+</div>
 
-<section id="features" class="py-16 bg-gray-100">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-8">Features That Wow</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <img src="{{ url_for('static', filename='outfit-image.svg') }}" alt="Outfit Planning Icon"
-                    class="w-16 h-16 mx-auto mb-4">
-                <h4 class="text-xl font-bold mb-2">AI-Powered Outfit Planning</h4>
-                <p class="text-gray-700">Effortlessly create stunning outfits for any occasion. Our intelligent
-                    algorithms suggest stylish combinations based on your wardrobe, event, and personal style.</p>
+<section id="features" class="py-16 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 text-center">Features That Wow</h2>
+        <div class="mt-16 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+            <div class="feature-card group relative">
+                <div class="p-4 text-center">
+                    <img src="{{ url_for('static', filename='inventory.svg') }}" alt="Digital Closet Icon" height="48"
+                        width="48" class="mx-auto mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <a href="#">
+                            <span aria-hidden="true" class="absolute inset-0"></span>
+                            Digital Closet
+                        </a>
+                    </h3>
+                    <p class="mt-2 text-base text-gray-600">Catalog your entire wardrobe with ease. Add items,
+                        categorize them, and even upload photos to create your own virtual style hub.</p>
+                </div>
             </div>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <img src="{{ url_for('static', filename='checklist-icon.jpg') }}" alt="Packing List Icon"
-                    class="w-16 h-16 mx-auto mb-4">
-                <h4 class="text-xl font-bold mb-2">Smart Packing Lists</h4>
-                <p class="text-gray-700">Say goodbye to overpacking! Packr generates personalized packing lists based on
-                    your trip details, ensuring you have everything you need without the extra baggage.</p>
+
+            <div class="feature-card group relative">
+                <div class="p-4 text-center">
+                    <img src="{{ url_for('static', filename='hanger-icon.svg') }}" alt="Outfit Planning Icon"
+                        height="48" width="48" class="mx-auto mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <a href="#">
+                            <span aria-hidden="true" class="absolute inset-0"></span>
+                            AI-Powered Outfit Planning
+                        </a>
+                    </h3>
+                    <p class="mt-2 text-base text-gray-600">Effortlessly create stunning outfits for any occasion. Our
+                        intelligent algorithms suggest stylish combinations based on your wardrobe, event, and personal
+                        style.</p>
+                </div>
             </div>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <img src="{{ url_for('static', filename='closet-icon.svg') }}" alt="Digital Closet Icon"
-                    class="w-16 h-16 mx-auto mb-4">
-                <h4 class="text-xl font-bold mb-2">Digital Closet</h4>
-                <p class="text-gray-700">Catalog your entire wardrobe with ease. Add items, categorize them, and even
-                    upload photos to create your own virtual style hub.</p>
+
+            <div class="feature-card group relative">
+                <div class="p-4 text-center">
+                    <img src="{{ url_for('static', filename='checklist.svg') }}" alt="Packing List Icon" height="48"
+                        width="48" class="mx-auto mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <a href="#">
+                            <span aria-hidden="true" class="absolute inset-0"></span>
+                            Smart Packing Lists
+                        </a>
+                    </h3>
+                    <p class="mt-2 text-base text-gray-600">Say goodbye to overpacking! PackMyFit generates personalized
+                        packing lists based on your trip details, ensuring you have everything you need without the
+                        extra baggage.</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="how-it-works" class="py-16">
-    <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold mb-8">How Packr Works</h2>
-        <div class="flex flex-wrap justify-center">
-            <div class="w-full md:w-1/3 px-4 mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <span class="text-5xl text-[#42BA96] font-bold">1</span>
-                    <h5 class="text-xl font-bold mt-4 mb-2">Create Your Closet</h4>
-                        <p class="text-gray-700">Add your favorite clothing items and accessories to your digital
-                            closet.</p>
+<section id="how-it-works" class="py-16 bg-white">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">How It Works</h2>
+            <p class="mt-4 text-lg leading-8 text-gray-600">Streamline your packing process and travel with confidence
+                with these easy steps:</p>
+        </div>
+        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+            <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900">
+                        <div
+                            class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
+                            <span class="text-white">1</span>
+                        </div>
+                        Create Your Closet
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600">Effortlessly add your favorite clothing items and
+                        accessories to your personalized digital closet.</dd>
                 </div>
-            </div>
-            <div class="w-full md:w-1/3 px-4 mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <span class="text-5xl text-[#42BA96] font-bold">2</span>
-                    <h5 class="text-xl font-bold mt-4 mb-2">Plan Your Event</h4>
-                        <p class="text-gray-700">Tell us about your upcoming trip or event – destination, dates, and any
-                            specific dress codes.</p>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900">
+                        <div
+                            class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
+                            <span class="text-white">2</span>
+                        </div>
+                        Plan Your Event
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600">Tell us about your upcoming trip or event –
+                        including destination, dates, and any specific dress codes.</dd>
                 </div>
-            </div>
-            <div class="w-full md:w-1/3 px-4 mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <span class="text-5xl text-[#42BA96] font-bold">3</span>
-                    <h5 class="text-xl font-bold mt-4 mb-2">Pack & Slay</h4>
-                        <p class="text-gray-700">Get outfit suggestions and a customized packing list tailored to your
-                            needs. It’s time to shine!</p>
+
+                <div class="relative pl-16">
+                    <dt class="text-base font-semibold leading-7 text-gray-900">
+                        <div
+                            class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
+                            <span class="text-white">3</span>
+                        </div>
+                        Pack & Slay
+                    </dt>
+                    <dd class="mt-2 text-base leading-7 text-gray-600">Get AI-powered outfit suggestions and a
+                        customized packing list tailored to your needs. It's time to shine!</dd>
                 </div>
-            </div>
+            </dl>
         </div>
     </div>
 </section>
 
-<footer class="bg-gray-800 py-6 text-center text-white">
-    <p class="text-sm">© 2023 Packr. All rights reserved.</p>
-</footer>
 {% endblock %}
