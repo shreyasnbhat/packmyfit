@@ -8,6 +8,8 @@ IMAGES_UPLOAD_FOLDER = 'items/images'
 DUMMY_ITEM_REPOSITORY_PATH="testdata/item_repository.csv"
 DUMMY_USER_PREFERENCES_PATH="testdata/user_preferences.txt"
 
+DEFAULT_CITY="San Jose"
+
 PRODUCT_IMAGE_TO_METADATA_EXPERT="""
 You are an expert at identifying important information from a collection of product images. 
 You can determine the type of product, it's color, brand, care labels, materials etc.

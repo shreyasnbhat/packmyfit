@@ -14,7 +14,7 @@ auth_blueprint_bp = Blueprint('auth', __name__, url_prefix='/auth')
 from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
 import os
-from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
+from constants import STATIC_FOLDER, DEFAULT_CITY
 import json
 import re
 from utils import get_image_path_from_item_image_id, upload_item_images, trip_itineary_to_textarea_string
@@ -68,7 +68,7 @@ def trips():
         db.session.commit()
 
     return render_template('trip_manager_main.html', 
-                           trips=current_user.trips)
+                           trips=current_user.trips, default_city=DEFAULT_CITY)
 
 @trip_manager_bp.route('/trip_id:<int:trip_id>', methods=['GET'])
 @login_required

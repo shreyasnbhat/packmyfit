@@ -35,7 +35,8 @@
         .content-container {
             padding-top: 60px;
             /* Match navbar height */
-            flex: 1; /* This will make the content take up the available space */
+            flex: 1;
+            /* This will make the content take up the available space */
         }
 
         .container {
@@ -132,7 +133,7 @@
 
         .button-container a.bg-green-500 {
             background-color: #68D391
-            /* Green color */
+                /* Green color */
         }
 
         .material-percentage {
@@ -271,15 +272,13 @@
 
             <div class="flex items-center">
                 <div class="hidden md:flex space-x-8">
-                    <a href="{{ url_for('home') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Home</a>
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('outfit_manager.events') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Outfits</a>
-                    <a href="{{ url_for('trip_manager.trips') }}"
-                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trips</a>
                     <a href="{{ url_for('item_repository.items') }}"
                         class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Items</a>
+                    <a href="{{ url_for('trip_manager.trips') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Trips</a>
+                    <a href="{{ url_for('outfit_manager.events') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Outfits</a>
                     <a href="{{ url_for('user_preferences.user_preferences') }}"
                         class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Preferences</a>
                     <div class="relative inline-block">
@@ -299,6 +298,8 @@
                         </div>
                     </div>
                     {% else %}
+                    <a href="{{ url_for('home') }}"
+                        class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Home</a>
                     <a href="#features"
                         class="px-3 py-2 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-200">Features</a>
                     <a href="#how-it-works"
@@ -326,19 +327,19 @@
 
         <div id="mobile-menu" class="md:hidden bg-white">
             <ul class="py-2 px-4">
-                <a href="{{ url_for('home') }}" class="block py-2 px-4 hover:bg-gray-100">Home</a>
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('outfit_manager.events') }}"
-                        class="block py-2 px-4 hover:bg-gray-100">Outfits</a></li>
-                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trips</a>
-                </li>
                 <li><a href="{{ url_for('item_repository.items') }}" class="block py-2 px-4 hover:bg-gray-100">Items</a>
                 </li>
+                <li><a href="{{ url_for('trip_manager.trips') }}" class="block py-2 px-4 hover:bg-gray-100">Trips</a>
+                </li>
+                <li><a href="{{ url_for('outfit_manager.events') }}"
+                        class="block py-2 px-4 hover:bg-gray-100">Outfits</a></li>
                 <li><a href="{{ url_for('user_preferences.user_preferences') }}"
                         class="block py-2 px-4 hover:bg-gray-100">Preferences</a></li>
                 <li><a href="{{ url_for('auth.logout') }}" class="block py-2 px-4 hover:bg-gray-100">Logout</a></li>
                 {% else %}
                 <nav>
+                    <li><a href="{{ url_for('home') }}" class="block py-2 px-4 hover:bg-gray-100">Home</a></li>
                     <li><a href="#features" class="block py-2 px-4 hover:bg-gray-100">Features</a></li>
                     <li><a href="#how-it-works" class="block py-2 px-4 hover:bg-gray-100">How It Works</a></li>
                     <li><a href="{{ url_for('auth.login') }}" class="block py-2 px-4 hover:bg-gray-100">Sign In</a></li>

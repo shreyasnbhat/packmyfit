@@ -1,5 +1,5 @@
 from flask import Flask
-from constants import DUMMY_ITEM_REPOSITORY_PATH, DUMMY_USER_PREFERENCES_PATH, IMAGES_UPLOAD_FOLDER, STATIC_FOLDER
+from constants import DUMMY_ITEM_REPOSITORY_PATH, DUMMY_USER_PREFERENCES_PATH, IMAGES_UPLOAD_FOLDER, STATIC_FOLDER, DEFAULT_CITY
 from utils import item_repository_csv_to_json
 from datetime import datetime, timedelta
 import os
@@ -72,11 +72,11 @@ def populate_database():
     # Clear all files recursively under static.
     for root, _ , files in os.walk(app.config['STATIC_FOLDER']):
         for file in files:
-            if file not in ["homepage.jpg", "hanger-icon.svg", "checklist.svg", "inventory.svg", "gemini.svg"]:
+            if file not in ["homepage.jpg", "hanger-icon.svg", "checklist.svg", "inventory.svg", "gemini.svg", "sparkles.svg"]:
                 os.remove(os.path.join(root, file))
         
     # Add a Dummy User.
-    dummy_user = User(username='testuser', display_name="Beta Broski", email='betabroski@gmail.com', password=generate_password_hash('1234', method='pbkdf2'))
+    dummy_user = User(username='shreyasbhat', display_name="Shreyas", email='betabroski@gmail.com', password=generate_password_hash('abcd1234', method='pbkdf2'))
     db.session.add(dummy_user)
     db.session.flush()
 
@@ -105,7 +105,7 @@ def populate_database():
     # Add a Dummy Trip.
     dummy_trip = Trip(
         user_id = dummy_user.id,
-        departure_city="San Jose",
+        departure_city=DEFAULT_CITY,
         destination_city="New York",
         start_date=(datetime.now() + timedelta(days=1)).date(),  # Start date is tomorrow
         end_date=(datetime.now() + timedelta(days=5)).date(),  # End date is 4 days from tomorrow
@@ -113,7 +113,7 @@ def populate_database():
         working_remotely=False,
         purpose="City Break",
         weather=json.dumps(weather_forecast.get_forecast_data_daily(city="New York")),
-        itinerary="Day 1: Sightseeing, Day 2: Sightseeing, Day 3: Sightseeing",
+        itinerary="Day 1: Manhattan Sightseenig\nDay 2: Brooklyn Sightseeing\nDay 3: Work\nDay 4: Central Park and Museums + Fly out",
     )
     db.session.add(dummy_trip)
     dummy_user.trips.append(dummy_trip)
@@ -122,17 +122,17 @@ def populate_database():
     event_date = datetime.now() + timedelta(days=1)
     dummy_event1 = Event(
         user_id=dummy_user.id,
-        city="San Jose",
+        city=DEFAULT_CITY,
         datetime=event_date,
         description="Hiking Trip",
-        weather=json.dumps(weather_forecast.get_forecast_data_hourly(city="San Jose", date_filter=event_date.date()))
+        weather=json.dumps(weather_forecast.get_forecast_data_hourly(city=DEFAULT_CITY, date_filter=event_date.date()))
     )
     dummy_event2 = Event(
         user_id=dummy_user.id,
-        city="San Jose",
+        city=DEFAULT_CITY,
         datetime=event_date,
-        description="Fine Dining with friends",
-        weather=json.dumps(weather_forecast.get_forecast_data_hourly(city="San Jose", date_filter=event_date.date()))
+        description="Fine Dine with Friends",
+        weather=json.dumps(weather_forecast.get_forecast_data_hourly(city=DEFAULT_CITY, date_filter=event_date.date()))
     )
     dummy_user.events.append(dummy_event1)
     dummy_user.events.append(dummy_event2)
