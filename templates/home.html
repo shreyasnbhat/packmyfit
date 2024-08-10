@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="bg-white"
     style="background-image: url('{{ url_for('static', filename='homepage.jpg') }}'); background-size: cover; background-position: center;">
     <div class="relative isolate px-6 pt-14 lg:px-8">
@@ -21,7 +22,10 @@
                     Fuss
                 </h1>
                 <p class="mt-6 text-lg leading-8 text-white">The smartest way to organize your wardrobe, create packing
-                    lists, and plan perfect outfits for any trip or event.</p>
+                    lists, and plan perfect outfits for any trip or event. 
+                    <br>
+                    <b>Powered by Google's latest <a href="https://ai.google.dev/gemini-api/docs/models/gemini">Gemini</a> models!</b>
+                </p>
                 <div class="mt-10 flex items-center justify-center gap-x-6">
                     <a href="{{ url_for('auth.signup') }}"
                         class="rounded-md bg-green-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get
@@ -61,6 +65,23 @@
 
             <div class="feature-card group relative">
                 <div class="p-4 text-center">
+                    <img src="{{ url_for('static', filename='checklist.svg') }}" alt="Packing List Icon" height="48"
+                        width="48" class="mx-auto mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">
+                        <a href="#">
+                            <span aria-hidden="true" class="absolute inset-0"></span>
+                            Smart Packing Lists & Generated Itineraries
+                        </a>
+                    </h3>
+                    <p class="mt-2 text-base text-gray-600">Say goodbye to overpacking! PackMyFit generates personalized
+                        packing lists and itineraries based on your trip details. Our smart, AI-powered checklists are
+                        generated based on what you already have in your digital wardrobe, ensuring you have everything
+                        you need without the extra baggage.</p>
+                </div>
+            </div>
+
+            <div class="feature-card group relative">
+                <div class="p-4 text-center">
                     <img src="{{ url_for('static', filename='hanger-icon.svg') }}" alt="Outfit Planning Icon"
                         height="48" width="48" class="mx-auto mb-4">
                     <h3 class="text-xl font-bold text-gray-900">
@@ -70,26 +91,12 @@
                         </a>
                     </h3>
                     <p class="mt-2 text-base text-gray-600">Effortlessly create stunning outfits for any occasion. Our
-                        intelligent algorithms suggest stylish combinations based on your wardrobe, event, and personal
-                        style.</p>
+                        intelligent algorithms suggest stylish combinations based on the items you already have in your
+                        digital wardrobe, your event, and personal style. The planner will even let you know if there's
+                        anything you don't own that could make the outfit even better!</p>
                 </div>
             </div>
 
-            <div class="feature-card group relative">
-                <div class="p-4 text-center">
-                    <img src="{{ url_for('static', filename='checklist.svg') }}" alt="Packing List Icon" height="48"
-                        width="48" class="mx-auto mb-4">
-                    <h3 class="text-xl font-bold text-gray-900">
-                        <a href="#">
-                            <span aria-hidden="true" class="absolute inset-0"></span>
-                            Smart Packing Lists
-                        </a>
-                    </h3>
-                    <p class="mt-2 text-base text-gray-600">Say goodbye to overpacking! PackMyFit generates personalized
-                        packing lists based on your trip details, ensuring you have everything you need without the
-                        extra baggage.</p>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -109,10 +116,10 @@
                             class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
                             <span class="text-white">1</span>
                         </div>
-                        Create Your Closet
+                        Create Your Digital Wardrobe
                     </dt>
                     <dd class="mt-2 text-base leading-7 text-gray-600">Effortlessly add your favorite clothing items and
-                        accessories to your personalized digital closet.</dd>
+                        accessories to your personalized digital closet. This is your style foundation!</dd>
                 </div>
 
                 <div class="relative pl-16">
@@ -121,10 +128,10 @@
                             class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
                             <span class="text-white">2</span>
                         </div>
-                        Plan Your Event
+                        Plan Your Trip or Event
                     </dt>
                     <dd class="mt-2 text-base leading-7 text-gray-600">Tell us about your upcoming trip or event –
-                        including destination, dates, and any specific dress codes.</dd>
+                        including destination, dates, and any specific dress codes. The more details, the better!</dd>
                 </div>
 
                 <div class="relative pl-16">
@@ -133,14 +140,14 @@
                             class="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-green-500">
                             <span class="text-white">3</span>
                         </div>
-                        Pack & Slay
+                        Get AI-Powered Recommendations
                     </dt>
-                    <dd class="mt-2 text-base leading-7 text-gray-600">Get AI-powered outfit suggestions and a
-                        customized packing list tailored to your needs. It's time to shine!</dd>
+                    <dd class="mt-2 text-base leading-7 text-gray-600">Receive personalized outfit suggestions, a smart packing list tailored to your needs, and even a generated itinerary! PackMyFit helps you shine with confidence.</dd>
                 </div>
             </dl>
         </div>
     </div>
 </section>
+
 
 {% endblock %}

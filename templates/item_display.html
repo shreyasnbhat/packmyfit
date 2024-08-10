@@ -91,18 +91,21 @@
                     <hr class="my-6 border-t border-gray-300">
                     <div class="mt-4 flex space-x-4">
                         <form method="POST"
-                            action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}"
-                            class="w-1/2">
+                              action="{{ url_for('item_repository.item_generate_metadata', item_id=item.id)}}"
+                              class="w-3/4"> 
                             <button type="submit"
-                                class="w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300">
-                                <span class="mr-2">✨</span> Generate Metadata
+                                    class="w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300 relative"> 
+                                <span class="mr-2">✨</span> Analyze Images
+                                <span class="absolute bottom-1 right-2 text-xs text-white"> 
+                                    powered by Gemini
+                                </span>
                             </button>
                         </form>
                         <form method="POST" enctype="multipart/form-data"
-                            action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}" class="w-1/2">
+                              action="{{ url_for('item_repository.item_image_upload', item_id = item.id)}}" class="w-1/4"> 
                             <input type="hidden" name="item_id" value="{{ item.id }}">
                             <label for="images"
-                                class="flex items-center justify-center w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300 cursor-pointer">
+                                   class="flex items-center justify-center w-full px-6 py-2 rounded-md font-semibold text-white bg-green-500 hover:bg-green-600 transition duration-300 cursor-pointer">
                                 <span class="mr-2">+</span> Add Image
                                 <input type="file" name="images" id="images" class="hidden" accept="image/*" multiple>
                             </label>

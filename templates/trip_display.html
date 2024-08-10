@@ -94,10 +94,15 @@
                     <!-- Generate Itinerary Form -->
                     <form id="generate-itinerary-form" method="POST"
                         action="{{ url_for('trip_manager.generate_itinerary', trip_id=trip.id) }}"
-                        class="flex flex-col mt-2">
+                        class="flex flex-col mt-2 relative">
+
                         <button type="submit" id="generate-itinerary-button"
-                            class="bg-green-500 hover:bg-green-800 text-white font-medium py-2 px-4 rounded-md">Generate
-                            Itinerary</button>
+                            class="bg-green-500 hover:bg-green-800 text-white font-medium py-2 px-4 rounded-md">
+                            <span class="mr-2">✨</span>Generate Itinerary
+                            <span class="absolute bottom-1 right-2 text-xs text-white">
+                                powered by Gemini
+                            </span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -141,8 +146,10 @@
             <input type="hidden" name="trip_id" value="{{ trip.id }}">
             <button id="generate_checklist_button"
                 class="w-full bg-green-500 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-101"
-                type="submit">
-                Generate Checklist
+                type="submit"><span class="mr-2">✨</span>
+                Generate Checklist <span class="absolute bottom-1 right-2 text-xs text-white">
+                    powered by Gemini
+                </span>
             </button>
         </form>
     </div>

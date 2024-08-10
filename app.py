@@ -72,7 +72,7 @@ def populate_database():
     # Clear all files recursively under static.
     for root, _ , files in os.walk(app.config['STATIC_FOLDER']):
         for file in files:
-            if file not in ["homepage.jpg", "hanger-icon.svg", "checklist.svg", "inventory.svg"]:
+            if file not in ["homepage.jpg", "hanger-icon.svg", "checklist.svg", "inventory.svg", "gemini.svg"]:
                 os.remove(os.path.join(root, file))
         
     # Add a Dummy User.

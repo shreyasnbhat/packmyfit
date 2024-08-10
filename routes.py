@@ -17,7 +17,7 @@ import os
 from constants import STATIC_FOLDER, IMAGES_UPLOAD_FOLDER
 import json
 import re
-from utils import get_image_path_from_item_image_id, upload_item_images, is_json, trip_itineary_to_textarea_string
+from utils import get_image_path_from_item_image_id, upload_item_images, trip_itineary_to_textarea_string
 from collections import defaultdict
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
