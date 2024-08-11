@@ -5,13 +5,15 @@ from datetime import date, datetime
 
 from geopy.geocoders import Nominatim
 from prettytable import PrettyTable
-from constants import OPEN_WEATHER_API_KEY
+from constants import OPEN_WEATHER_API_KEY, TEST_WEATHER_FORECAST
+from flags import WEATHER_TESTING
 
 class WeatherForecast:
 
-    def __init__(self, api_key: str = OPEN_WEATHER_API_KEY):
+    def __init__(self, api_key: str = OPEN_WEATHER_API_KEY, testing: bool = WEATHER_TESTING):
         self.geolocator = Nominatim(user_agent="weather_app")
         self.api_key = api_key
+        self.testing = testing
 
     def get_forecast_from_openweather(self, city: str):
         """Fetches daily weather forecast in JSON.
@@ -22,15 +24,18 @@ class WeatherForecast:
         Returns:
             A JSON object containing the Open Weather forecast.
         """
-        latlng = self.geolocator.geocode(city)
-        if not latlng:
-            return f"Could not find weather data for {city}. Please check the city name."
-        lat = latlng.latitude
-        lon = latlng.longitude
+        if not self.testing:
+            latlng = self.geolocator.geocode(city)
+            if not latlng:
+                return f"Could not find weather data for {city}. Please check the city name."
+            lat = latlng.latitude
+            lon = latlng.longitude
 
-        url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={self.api_key}&units=metric"
-        response = requests.get(url)
-        return json.loads(response.text)
+            url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={self.api_key}&units=metric"
+            response = requests.get(url)
+            return json.loads(response.text)
+        else:
+            return json.loads(TEST_WEATHER_FORECAST)
 
     def get_forecast_table_from_data(self, forecast_data) -> str:
         forecast_table = PrettyTable()
@@ -141,9 +146,3 @@ class WeatherForecast:
             })
 
         return daily_forecast_data
-    
-
-# wf = WeatherForecast()
-
-# print(wf.get_forecast_table_from_data(wf.get_forecast_data_hourly("New York")))
-# print(wf.get_forecast_table_from_data(wf.get_forecast_data_daily("New York")))

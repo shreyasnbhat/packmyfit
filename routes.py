@@ -24,7 +24,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import *
 from flags import *
 from experts import *
-from celery_tasks import generate_product_metadata
 from weather_forecast import WeatherForecast
 
 weather_forecast = WeatherForecast()
@@ -458,7 +457,6 @@ def item(item_id):
     item_references["outfits"] = db.session.query(OutfitItem).filter_by(item_id=item_id).count()
     item_references["checklists"] = db.session.query(TripChecklistItem).filter_by(item_id=item_id).count() 
 
-
     return render_template('item_display.html', 
                            item=item_repository_item,
                            primary_image_path=primary_item_image_path,
@@ -513,13 +511,9 @@ def item_generate_metadata(item_id):
     item = db.session.get(Item, item_id)
     if request.method == 'POST':
         expert_result = {}
-        if not ENABLE_CELERY:
-            # Call the product metadata expert and render item_repository_item with the resulting json.
-            item_image_paths = [os.path.join(STATIC_FOLDER, image.path) for image in item.images]
-            expert_result = product_image_to_metadata_expert.generate_product_metadata(image_paths=item_image_paths)
-        else:
-            # Call the Celery task to generate metadata asynchronously.
-            generate_product_metadata.delay(item_id)
+        # Call the product metadata expert and render item_repository_item with the resulting json.
+        item_image_paths = [os.path.join(STATIC_FOLDER, image.path) for image in item.images]
+        expert_result = product_image_to_metadata_expert.generate_product_metadata(image_paths=item_image_paths)
 
         # LLM already sees the images.        
         if "brand" in expert_result and expert_result["brand"] is not None:
@@ -536,9 +530,8 @@ def item_generate_metadata(item_id):
             else:
                 print(f"Warning: Could not find ItemImage with path {primary_image_path}")
 
-        if not ENABLE_CELERY:
-            db.session.add(item)
-            db.session.commit()
+        db.session.add(item)
+        db.session.commit()
 
     return redirect(url_for('item_repository.item', item_id=item_id))
 

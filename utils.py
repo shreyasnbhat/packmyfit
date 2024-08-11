@@ -1,5 +1,4 @@
 from typing import Any, List, Dict
-from constants import USER_AGENT_HEADER
 import requests
 import json, re, os
 import string
@@ -37,6 +36,8 @@ def trip_itineary_to_textarea_string(trip_itinerary):
   Returns:
     A hierarchical string suitable for rendering in a textarea.
   """
+  if type(trip_itinerary) is str:
+     trip_itinerary = json.loads(trip_itinerary)
 
   output = ""
   for day, activities in trip_itinerary.items():
@@ -66,29 +67,6 @@ def item_repository_csv_to_json(csv_file: str) -> List[Dict[str, Any]]:
   for _, item_details in item_repository_df.iterrows():
     item_repository_data.append(item_details.to_dict())
   return item_repository_data
-
-
-def download_webpage(url: str, max_retries: int = 3) -> str:
-  """Downloads the contents of a webpage and returns the HTML Content.
-
-  Args:
-      url: The URL of the webpage to download.
-      max_retries: The maximum number of retries if a request fails.
-
-  Returns:
-      The HTML Content of the webpage, or None if all retries fail.
-  """
-
-  for attempt in range(max_retries):
-    try:
-      response = requests.get(url, headers=USER_AGENT_HEADER)
-      response.raise_for_status()  # Raise an exception for bad status codes
-      return response.text
-    except requests.exceptions.RequestException as e:
-      print(f"Error downloading {url}: {e}. Retrying... (Attempt {attempt+1}/{max_retries})")
-      if attempt == max_retries - 1:
-        print(f"Failed to download {url} after {max_retries} attempts.")
-        return None
 
 def get_json_from_generation(content: str) -> Any:
     json_data = None

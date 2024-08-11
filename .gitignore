@@ -2,8 +2,9 @@ __pycache__/*
 Item Repository/*
 items/images/*
 static/*
-testdata/*
+shreyas_testdata/*
 templates/.DS_Store
 .DS_Store
 app.db
 .vscode/*
+api_keys.py

@@ -1,43 +1,27 @@
-OPEN_WEATHER_API_KEY="91553237797fc77dbd7bc610ea529793"
-GEMINI_API_KEY="AIzaSyDuEc50CK1T3dRYfhMx2_-r1igsSd0PY54"
+import system_prompts
+import api_keys
+import testsdata_constants
+
+# API Keys
+OPEN_WEATHER_API_KEY=api_keys.OPEN_WEATHER_API_KEY
+GEMINI_API_KEY=api_keys.GEMINI_API_KEY
+
 USER_AGENT_HEADER = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'}
 
 STATIC_FOLDER = 'static'
 IMAGES_UPLOAD_FOLDER = 'items/images'
-
-DUMMY_ITEM_REPOSITORY_PATH="testdata/item_repository.csv"
-DUMMY_USER_PREFERENCES_PATH="testdata/user_preferences.txt"
-
 DEFAULT_CITY="San Jose"
 
-PRODUCT_IMAGE_TO_METADATA_EXPERT="""
-You are an expert at identifying important information from a collection of product images. 
-You can determine the type of product, it's color, brand, care labels, materials etc.
-You are given a few images with it's file names showing an article of clothing which optionally displays the following:
-1) Brand -> For example: Nike, Adidas, Lululemon etc.
-2) Care Instructions -> For example: Wash Cold, Low Dry. Try to recognize the common care logos if not written in text. 
-Use a single language if care labels are shown in several languages. Prefer English.
-3) Material -> For example, Cotton 90%, Polyester 10%. The percentages must sum up to 100%.
-4) Primary Image Path: Return an image path that fully display the item. Choose the best one. Do not choose images which are just the care labels.
-Output everything you can find in JSON. 
-{ 
-    "name": "...",
-    "color": "...",
-    "brand": "...",
-    "care_instruction": "....",
-    "material": [
-           {
-                 "name" : "Cotton",
-                 "percentage" : xx,
-           },
-           {
-                 "name" : "Polyester",
-                 "percentage" : yy,
-           },
-    ],
-    "primary_image_path" : "...",
-}
-"""
+# Dummy dataset paths
+DUMMY_TESTDATA_SRC_PATH=testsdata_constants.TESTDATA_SRC_FOLDER
+DUMMY_ITEM_REPOSITORY_PATH=testsdata_constants.ITEM_REPOSITORY_PATH
+DUMMY_USER_PREFERENCES_PATH=testsdata_constants.USER_PREFERENCES_PATH
+
+# System prompts
+PRODUCT_IMAGE_TO_METADATA_EXPERT = system_prompts.PRODUCT_IMAGE_TO_METADATA_EXPERT
+TRIP_ITINERARY_EXPERT = system_prompts.TRIP_ITINERARY_EXPERT
+TRIP_CHECKLIST_EXPERT = system_prompts.TRIP_CHECKLIST_EXPERT
+OUTFIT_EXPERT = system_prompts.OUTFIT_EXPERT
 
 TEST_PRODUCT_METADATA = """
 {
@@ -51,363 +35,256 @@ TEST_PRODUCT_METADATA = """
       {"name": "Polyester", "percentage": 44}, 
       {"name": "Elastane", "percentage": 12}
     ],
-    "primary_image_path" : "",
-}
-"""
-
-TRIP_ITINERARY_EXPERT = """
-You are an expert travel planner, known for crafting unique and memorable itineraries. Your goal is to create a detailed, day-by-day travel itinerary, formatted as a structured JSON object, for a trip, considering the provided trip parameters.
-
-Inputs:
-
-1. Trip Parameters: Basic information about the trip, formatted as follows:
-   ```
-   Departure City: ...
-   Destination City: ...
-   Start Date: YYYY-MM-DD
-   End Date: YYYY-MM-DD
-   Laundry Service Available: True/False
-   Working Remotely: True/False
-   ```
-
-Itinerary Generation Process:
-
-1. Research the Destination:
-   - Gather comprehensive information about the destination city, including popular attractions, hidden gems, local customs, transportation options, and average costs.
-   - Leverage online resources, travel blogs, and reviews to identify unique and authentic experiences.
-
-2. Tailor to User Preferences:
-   - Carefully analyze the user's preferences to understand their travel style, interests, and priorities.
-   - Prioritize activities and experiences that align with their stated preferences.
-   - Consider their budget level and suggest suitable options accordingly.
-   - Factor in their desired pace of travel to create a balanced itinerary with a mix of activities and downtime.
-
-3. Structure the Itinerary:
-   - Create a day-by-day itinerary within a JSON object. Each day should be a key (e.g., "Day 1", "Day 2") with its value being an array of activity objects.
-   - Each activity object should include:
-      - `time`: (e.g., "9:00 AM - 12:00 PM")
-      - `activity`: (e.g., "Explore Central Park")
-      - `description`: (Brief description of the activity)
-      - `address`: (Address of the location)
-      - `duration`: (Estimated duration)
-      - `transportation`: (Suggested transportation method)
-      - `cost`: (Approximate cost)
-
-4. Incorporate Practical Considerations:
-   - Account for laundry needs based on the "laundryServiceAvailable" parameter, suggesting laundromats or laundry services if needed within the relevant day's activities.
-   - If "workingRemotely" is true, allocate time for work and suggest cafes or coworking spaces with reliable Wi-Fi within the relevant day's activities.
-   - Provide alternative activity suggestions in case of unexpected weather conditions.
-
-5. Add Value with Insider Tips:
-   - Offer valuable insights and tips to enhance the user's experience, such as:
-     - Recommendations for local restaurants or hidden culinary gems.
-     - Tips for navigating public transportation or finding the best deals.
-     - Insights into local customs or etiquette.
-     - Suggestions for off-peak hours to visit popular attractions. Include these tips within the relevant activity's description.
-
-Output Format Example (JSON only)
-{
-  "Day 1": [
-    {
-      "time": "9:00 AM - 12:00 PM",
-      "activity": "Explore Central Park",
-      "description": "Start your day with a stroll through this iconic green space...",
-      "address": "Central Park, New York, NY",
-      "duration": "2-3 hours",
-      "transportation": "Walk / Public Transportation",
-      "cost": "Free"
-    },
-    {
-      "time": "12:00 PM - 1:00 PM",
-      "activity": "Lunch at [Restaurant Name]",
-      "description": "[Brief description of the restaurant and cuisine type]",
-      "address": "[Address]",
-      "duration": "1 hour",
-      "transportation": "Walk",
-      "cost": "$15-20"
-    },
-    { 
-      "time": "1:00 PM - 4:00 PM",
-      "activity": "[Activity]",
-      "description": "...",
-      "address": "[Address]",
-      "duration": "...",
-      "transportation": "...",
-      "cost": "..." 
-    }
-  ],
-  "Day 2": [
-    {
-      "time": "...",
-      "activity": "...",
-      "description": "...",
-      "address": "...",
-      "duration": "...",
-      "transportation": "...",
-      "cost": "..."
-    }
-  ]
+    "primary_image_path" : ""
 }
 """
 
 TEST_TRIP_ITINERARY="""
 {
-  "Day 1: 2023-08-08": [
+  "Day 1: 2024-08-11": [
     {
       "time": "Morning",
-      "activity": "Arrive in Seattle and Check-in",
-      "description": "Arrive at Seattle-Tacoma International Airport (SEA), pick up your rental car, and check into your hotel in the downtown area. Consider staying near Pike Place Market for easy access to attractions.",
-      "address": "Seattle-Tacoma International Airport (SEA), Seattle, WA",
+      "activity": "Arrive in New York City & Check-in",
+      "description": "Arrive at John F. Kennedy International Airport (JFK) or Newark Liberty International Airport (EWR). Take a taxi, ride-share, or public transportation to your hotel in Manhattan. Consider staying in Midtown or Lower Manhattan for easy access to attractions.",
+      "address": "JFK Airport or EWR Airport, New York, NY",
       "duration": "2-3 hours",
-      "transportation": "Airplane, Rental Car",
-      "cost": "Varies depending on flight and rental car costs"
+      "transportation": "Airplane, Taxi, Ride-share, or Public Transportation",
+      "cost": "Varies depending on flight and transportation costs"
     },
     {
       "time": "Lunch",
-      "activity": "Lunch at Pike Place Market",
-      "description": "Enjoy the vibrant atmosphere and fresh seafood at Pike Place Market. Try the famous fish throwing, sample local produce, and grab lunch at one of the many food stalls.",
-      "address": "Pike Place Market, Seattle, WA",
+      "activity": "Lunch in Greenwich Village",
+      "description": "Enjoy lunch in the charming Greenwich Village neighborhood. This area is known for its cozy cafes and diverse restaurants.",
+      "address": "Greenwich Village, New York, NY",
+      "duration": "1-2 hours",
+      "transportation": "Subway or Walk",
+      "cost": "$15-25"
+    },
+    {
+      "time": "Afternoon",
+      "activity": "Explore Washington Square Park",
+      "description": "Relax and people-watch in Washington Square Park, a popular gathering place for locals and tourists. Enjoy street performers and the iconic arch.",
+      "address": "Washington Square Park, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Walk",
+      "cost": "Free"
+    },
+    {
+      "time": "Evening",
+      "activity": "Dinner and a Broadway Show",
+      "description": "Experience the magic of Broadway with a captivating performance. Have dinner before or after the show at one of the many restaurants in the Theater District.",
+      "address": "Theater District, New York, NY",
+      "duration": "4-5 hours",
+      "transportation": "Subway or Walk",
+      "cost": "$100-200 (depending on show and dinner choices)"
+    }
+  ],
+  "Day 2: 2024-08-12": [
+    {
+      "time": "Morning",
+      "activity": "Visit the Empire State Building",
+      "description": "Ascend to the top of the Empire State Building for breathtaking panoramic views of New York City.",
+      "address": "Empire State Building, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Subway",
+      "cost": "$40-50"
+    },
+    {
+      "time": "Lunch",
+      "activity": "Lunch near Bryant Park",
+      "description": "Enjoy lunch at one of the many restaurants or food stalls near Bryant Park, a beautiful green space in Midtown Manhattan.",
+      "address": "Bryant Park, New York, NY",
       "duration": "1-2 hours",
       "transportation": "Walk",
       "cost": "$15-25"
     },
     {
       "time": "Afternoon",
-      "activity": "Explore Pike Place Market and Waterfront",
-      "description": "Spend the afternoon exploring the various stalls and shops at Pike Place Market. Afterwards, take a walk along the waterfront and enjoy views of Elliott Bay.",
-      "address": "Pike Place Market & Seattle Waterfront, Seattle, WA",
+      "activity": "Explore Times Square & M&M's World",
+      "description": "Experience the bright lights and bustling energy of Times Square. Visit M&M's World for a fun and colorful experience.",
+      "address": "Times Square, New York, NY",
       "duration": "2-3 hours",
       "transportation": "Walk",
       "cost": "Free (except for any purchases)"
     },
     {
       "time": "Evening",
-      "activity": "Dinner at a Local Restaurant",
-      "description": "Choose from a variety of restaurants in the downtown area for dinner. Consider trying Ivar's Seafood Bar for a classic Seattle seafood experience.",
-      "address": "Various Restaurants, Seattle, WA",
-      "duration": "1-2 hours",
-      "transportation": "Walk",
-      "cost": "$20-40"
-    }
-  ],
-  "Day 2: 2023-08-09": [
-    {
-      "time": "Morning",
-      "activity": "Visit the Space Needle",
-      "description": "Head to the iconic Space Needle for panoramic views of the city, Puget Sound, and the surrounding mountains.",
-      "address": "Space Needle, Seattle, WA",
+      "activity": "Dinner in Little Italy",
+      "description": "Indulge in delicious Italian cuisine in the historic Little Italy neighborhood. Enjoy the lively atmosphere and traditional dishes.",
+      "address": "Little Italy, New York, NY",
       "duration": "2-3 hours",
-      "transportation": "Walk or Public Transportation",
-      "cost": "$35-40"
-    },
-    {
-      "time": "Lunch",
-      "activity": "Lunch in the Seattle Center",
-      "description": "Grab lunch at one of the many restaurants or cafes in the Seattle Center, home to the Space Needle and other attractions.",
-      "address": "Seattle Center, Seattle, WA",
-      "duration": "1-2 hours",
-      "transportation": "Walk",
-      "cost": "$15-25"
-    },
-    {
-      "time": "Afternoon",
-      "activity": "Explore the Museum of Pop Culture (MoPOP)",
-      "description": "Immerse yourself in the world of popular music, science fiction, and pop culture at the Museum of Pop Culture (MoPOP).",
-      "address": "Museum of Pop Culture (MoPOP), Seattle, WA",
-      "duration": "2-3 hours",
-      "transportation": "Walk",
-      "cost": "$30"
-    },
-    {
-      "time": "Evening",
-      "activity": "Dinner and Drinks in Belltown",
-      "description": "Enjoy dinner and drinks in the trendy Belltown neighborhood, known for its vibrant nightlife and diverse dining options.",
-      "address": "Various Restaurants and Bars, Belltown, Seattle, WA",
-      "duration": "2-3 hours",
-      "transportation": "Walk or Public Transportation",
+      "transportation": "Subway",
       "cost": "$30-50"
     }
   ],
-  "Day 3: 2023-08-10": [
+  "Day 3: 2024-08-13": [
     {
       "time": "Morning",
-      "activity": "Visit Kerry Park for City Views",
-      "description": "Start your day with breathtaking views of the Seattle skyline, Space Needle, and Mount Rainier from Kerry Park.",
-      "address": "Kerry Park, Seattle, WA",
-      "duration": "1-2 hours",
-      "transportation": "Rental Car or Rideshare",
-      "cost": "Free"
-    },
-    {
-      "time": "Late Morning",
-      "activity": "Explore the Fremont Troll",
-      "description": "Visit the quirky Fremont Troll sculpture under the Aurora Bridge and explore the eclectic Fremont neighborhood.",
-      "address": "Fremont Troll, Seattle, WA",
-      "duration": "1-2 hours",
-      "transportation": "Rental Car or Rideshare",
-      "cost": "Free"
+      "activity": "Visit the Statue of Liberty & Ellis Island",
+      "description": "Take a ferry to Liberty Island and visit the iconic Statue of Liberty. Afterwards, explore Ellis Island and learn about the history of immigration to the United States.",
+      "address": "Battery Park, New York, NY (Ferry Departure Point)",
+      "duration": "4-5 hours",
+      "transportation": "Ferry",
+      "cost": "$25-30"
     },
     {
       "time": "Lunch",
-      "activity": "Lunch in Fremont",
-      "description": "Enjoy lunch at one of the many restaurants or cafes in Fremont, known for its bohemian vibe and diverse culinary scene.",
-      "address": "Various Restaurants and Cafes, Fremont, Seattle, WA",
+      "activity": "Lunch in the Financial District",
+      "description": "Grab lunch in the Financial District, near the ferry terminal. There are numerous options ranging from casual to upscale dining.",
+      "address": "Financial District, New York, NY",
       "duration": "1-2 hours",
       "transportation": "Walk",
       "cost": "$15-25"
     },
     {
       "time": "Afternoon",
-      "activity": "Depart from Seattle",
-      "description": "Head back to Seattle-Tacoma International Airport (SEA) to catch your flight back to San Jose.",
-      "address": "Seattle-Tacoma International Airport (SEA), Seattle, WA",
-      "duration": "2-3 hours",
-      "transportation": "Rental Car",
-      "cost": "Varies depending on flight costs"
-    }
-  ]
-}
-"""
-
-
-TRIP_CHECKLIST_EXPERT = """You are an experienced travel assistant, an expert at creating personalized packing lists that make packing a breeze. 
-Your task is to help the user prepare for their upcoming trip by generating a tailored packing list.
-																	
-Input:	
-- Trip Parameters: Departure City, Destination City, Start Date(YYYY-MM-DD), End Date(YYYY-MM-DD), Laundry Service Available, Working Remotely, Itinerary etc.
-- Item Repository: A list of items and their quantity that the user owns. Other metadata may also be provided such as color, brand etc.
-- User Preferences: A list of user preferences, this may contain any details you must keep in mind while preparing the packing list.
-
-Process:		
-- Consider all the Trip Parameters specified by the user. Keep the trip itinerary in mind as well.
-- Consider the weather at the destination while making packing list suggestions. Weather information will be provided to you.																																															
-- Analyze Item Repository: Thoroughly examine the items that a user owns. Take item quantities into account as well.																								
-- Consider all User Preferences: Carefully take into account all user preferences while making the checklist. Point it out if some preference is not being met in the misc information section.						
-- Prioritize Essentials: Identify the absolute necessities for the trip, considering the destination, weather, activities, and any special needs.																							
-- Optimize for Space: Select items that are versatile and can be mixed and matched to create various outfits, minimizing the overall amount of luggage.		
-- Pack Strategically: Organize the packing list into Checklist Groups.
-  Some examples of Checklist Groups are:																									
-  - Toiletry Kit: Includes medications, travel-sized toiletries, etc.																	
-  - Tech Kit: Includes charging cables, adapters, cameras, etc.																		
-  - Carry-On: Include clothes in packing cubes (if applicable), Toiletry kit, essentials etc.																			
-  - Backpack: Includes items for daily use like electronics, a light jacket, snacks, water bottle, etc., with explanations.																						
-  - Checked Luggage (if applicable): Consider this only trip duration is greater than 7/10 days.										
-- Minimize Luggage Items: Examine what luggage items does the user own & determine what pieces of luggage the user should carry and that can accomodate all items in the suggested packing list. 
-Do not suggest carrying a Checked In Luggage for trip shorter than a week.
-- Checklist Naming: Give the checklist a funny and cool name.												
-- Include Reminders: Add helpful reminders for essential pre-trip tasks in the misc information section. Limit these to under 10.						
-
-Additional Considerations:																																																		
-- Don't Overpack: Do not assume that user needs to bring everything the item repository contains.
-                  You'll be penalized for adding everything from the item repository.							
-- Assume that the Toiletry Kit & Tech Kit are a a part of bigger bags such as Carry On or the Backpack.
-- Hygiene and Comfort: Factor in items that contribute to the user's well-being during the trip, especially if they have any medical conditions.																						
-- Weather Adaptability: Pack for unexpected weather changes, especially if the forecast is unpredictable.																		
-- Activity-Specific Gear: If the user plans to engage in specific activities, include relevant gear like hiking boots, swimwear, etc.
-
-Think step by step while determining the packing list. Be selective and prioritize items that are truly necessary for the trip.																																																																						
-																									
-Output the checklist in the following JSON Format.
-Example:
-Input:
-
-Trip Parameters
-Departure City: ...
-Destination City: ...
-Start Date: YYYY-MM-DD
-End Date: YYYY-MM-DD
-Laundry Service Available: True/False
-Working Remotely: True/False
-Purpose: ...
-Itinerary: ....
-
-Weather
-+------------+---------+---------------+---------------+--------------+
-|    Date    | Weather | Min Temp (°C) | Max Temp (°C) | Humidity (%) |
-+------------+---------+---------------+---------------+--------------+
-| 2024-08-07 |   Rain  |    [19, 20]   |    [21, 21]   |   [84, 88]   |
-| 2024-08-08 |  Clouds |    [20, 23]   |    [21, 23]   |   [78, 88]   |
-| 2024-08-09 |   Rain  |    [23, 27]   |    [23, 27]   |   [76, 93]   |
-| 2024-08-10 |  Clear  |    [21, 30]   |    [21, 30]   |   [33, 91]   |
-| 2024-08-11 |  Clear  |    [20, 28]   |    [20, 28]   |   [32, 51]   |
-| 2024-08-12 |  Clear  |    [22, 30]   |    [22, 30]   |   [33, 53]   |
-+------------+---------+---------------+---------------+--------------+
-
-Item Repository
-<Item id=1, name=XYZ, brand= Brand 1, colors= None, quantity= 1, comments= ..., link= None, category=...>
-<Item id=3, name=ABC, brand= Brand 2, colors= None, quantity= 3, comments= ..., link= None, category=...>
-<Item id=4, name=DEF, brand= Brand 3, colors= None, quantity= 1, comments= ..., link= None, category=...>
-<Item id=7, name=GHI, brand= Brand 4, colors= None, quantity= 1, comments= ..., link= None, category=...>
-...
-...
-
-User Preferences
-<UserPackingPreference id=1, preference=I prefer wearing ... when it is...>
-<UserPackingPreference id=2, preference=I wear ... only for fancy dinners>
-...
-...
-
-Output:
-{
-  "name" : "The Efficient Yet Jinormous List",
-  "checklist_groups": [
-    {
-      "name": "Carry On Bag",
-      "contents": [
-        {
-          "id" : "1",
-          "name": "XYZ",
-          "quantity": 1,
-          "metadata": "...." 
-        },
-        {
-          "id" : "3",
-          "name": "ABC",
-          "quantity": 1,
-          "metadata": "..." 
-        }
-      ]
+      "activity": "Explore the 9/11 Memorial & Museum",
+      "description": "Pay your respects at the 9/11 Memorial and reflect on the events of September 11, 2001. Visit the museum to learn more about the history and impact of this tragic day.",
+      "address": "9/11 Memorial & Museum, New York, NY",
+      "duration": "3-4 hours",
+      "transportation": "Walk",
+      "cost": "$26"
     },
     {
-      "name": "Backpack",
-      "contents": [
-        {
-          "id" : "4",
-          "name": "DEF",
-          "quantity": 1,
-          "metadata": "...." 
-        },
-        {
-          "id" : "7",
-          "name": "GHI",
-          "quantity": 1,
-          "metadata": "..." 
-        }
-      ]
+      "time": "Evening",
+      "activity": "Dinner in Chinatown",
+      "description": "Experience the vibrant culture and delicious food of Chinatown. Explore the bustling streets and enjoy an authentic Chinese dinner.",
+      "address": "Chinatown, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Subway",
+      "cost": "$20-40"
     }
-    
   ],
-  "misc_information": [
-    "Check in to your flights ..",
-    "Remember to charge your phone..",
-    "..."
+  "Day 4: 2024-08-14": [
+    {
+      "time": "Morning",
+      "activity": "Visit the Metropolitan Museum of Art",
+      "description": "Explore one of the world's largest and finest art museums, The Metropolitan Museum of Art. Admire masterpieces from various cultures and periods.",
+      "address": "The Metropolitan Museum of Art, New York, NY",
+      "duration": "3-4 hours",
+      "transportation": "Subway",
+      "cost": "$25"
+    },
+    {
+      "time": "Lunch",
+      "activity": "Lunch in Central Park",
+      "description": "Enjoy a picnic lunch or dine at one of the cafes in Central Park, a sprawling oasis in the heart of Manhattan.",
+      "address": "Central Park, New York, NY",
+      "duration": "1-2 hours",
+      "transportation": "Walk",
+      "cost": "$15-25"
+    },
+    {
+      "time": "Afternoon",
+      "activity": "Explore Central Park & Strawberry Fields",
+      "description": "Spend the afternoon exploring the scenic landscapes of Central Park. Visit Strawberry Fields, a memorial dedicated to John Lennon.",
+      "address": "Central Park, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Walk",
+      "cost": "Free"
+    },
+    {
+      "time": "Evening",
+      "activity": "Dinner and Drinks in Chelsea",
+      "description": "Enjoy dinner and drinks in the trendy Chelsea neighborhood, known for its art galleries, restaurants, and nightlife.",
+      "address": "Chelsea, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Subway",
+      "cost": "$30-50"
+    }
+  ],
+  "Day 5: 2024-08-15": [
+    {
+      "time": "Morning",
+      "activity": "Visit the Top of the Rock Observation Deck",
+      "description": "Enjoy stunning views of the city from the Top of the Rock Observation Deck at Rockefeller Center. Capture iconic photos of Central Park and the Empire State Building.",
+      "address": "Rockefeller Center, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Subway",
+      "cost": "$40-50"
+    },
+    {
+      "time": "Lunch",
+      "activity": "Lunch near Rockefeller Center",
+      "description": "Have lunch at one of the many restaurants or cafes near Rockefeller Center.",
+      "address": "Rockefeller Center, New York, NY",
+      "duration": "1-2 hours",
+      "transportation": "Walk",
+      "cost": "$15-25"
+    },
+    {
+      "time": "Afternoon",
+      "activity": "Depart from New York City",
+      "description": "Head to JFK Airport or EWR Airport to catch your flight home. Allow ample time for transportation and airport security.",
+      "address": "JFK Airport or EWR Airport, New York, NY",
+      "duration": "2-3 hours",
+      "transportation": "Taxi, Ride-share, or Public Transportation",
+      "cost": "Varies depending on transportation costs"
+    }
   ]
 }
 """
-
 
 TEST_TRIP_CHECKLIST = """
 {
-  "name" : "The Efficient Yet Ginormous List",
+  "name": "The NYC Hustle Checklist",
   "checklist_groups": [
     {
       "name": "Carry On Bag",
       "contents": [
         {
-          "id" : "1",
+          "id": "16",
+          "name": "Monos Carry On Pro",
+          "quantity": 1,
+          "metadata": "Carry on Luggage"
+        },
+        {
+          "id": "1",
           "name": "Summer Polo",
           "quantity": 1,
-          "metadata": "For the Hot Summer days."
+          "metadata": "To wear on a sunny day"
+        },
+        {
+          "id": "2",
+          "name": "Pima Cotton T-Shirt",
+          "quantity": 1,
+          "metadata": "A comfortable Olive Green T-shirt"
+        },
+        {
+          "id": "3",
+          "name": "Supima T-Shirt",
+          "quantity": 2,
+          "metadata": "One of each color"
+        },
+        {
+          "id": "8",
+          "name": "Full Sleeve Fleece Hoodie",
+          "quantity": 1,
+          "metadata": "Carry one of the two, for cooler evenings"
+        },
+        {
+          "id": "9",
+          "name": "SuperSoft Lounge Pants",
+          "quantity": 1,
+          "metadata": "Comfortable pants for relaxing at the hotel"
+        },
+        {
+          "id": "11",
+          "name": "541 Athletic Taper Jeans (32 x 32)",
+          "quantity": 1,
+          "metadata": "A pair of jeans for the trip"
+        },
+        {
+          "id": "13",
+          "name": "Tree Loungers",
+          "quantity": 1,
+          "metadata": "Comfortable shoes for walking"
+        },
+        {
+          "id": "15",
+          "name": "Slippers",
+          "quantity": 1,
+          "metadata": "For use at the hotel"
         }
       ]
     },
@@ -415,135 +292,33 @@ TEST_TRIP_CHECKLIST = """
       "name": "Backpack",
       "contents": [
         {
-          "id" : "77",
-          "name": "Pixel 8 Pro (256 GB)",
+          "id": "17",
+          "name": "ReFraction Packable Backpack",
           "quantity": 1,
-          "metadata": "Why not carry your phone?"
+          "metadata": "Your backpack for daily adventures"
+        },
+        {
+          "id": "4",
+          "name": "24x7 T-Shirt",
+          "quantity": 1,
+          "metadata": "In case you need an extra T-shirt"
         }
       ]
     }
   ],
   "misc_information": [
-    "Remember to check in to your flights.",
-    "Remember to charge your phone."
+    "Remember to pack your travel essentials like your wallet, phone charger, and any necessary medications.",
+    "Don't forget to apply sunscreen, especially during the day.",
+    "Stay hydrated by carrying a reusable water bottle.",
+    "Download offline maps of New York City in case you don't have internet access.",
+    "Purchase a MetroCard for easy transportation on the subway.",
+    "Book your flights and accommodation in advance, especially during peak season.",
+    "Let your bank know about your travel dates to avoid any issues with your cards.",
+    "Pack a light jacket or sweater for cooler evenings or air-conditioned places.",
+    "Familiarize yourself with local customs and etiquette.",
+    "Have a great trip to New York City!"
   ]
 }
-"""
-
-OUTFIT_EXPERT = """
-You are a personal fashion stylist and image consultant, passionate about helping users express themselves through their clothing, with an expert understanding of current trends and timeless style principles. 
-Your goal is to generate outfit recommendations in JSON format based on the provided user information, thoughtfully curated to suit their individual needs and preferences.
-
-**Inputs:**
-
-You will receive the following information as input:
-
-1. **Wardrobe Inventory:** A detailed list of the user's clothing items, each formatted as: 
-   `<Item id=1, name=XYZ, brand= Brand 1, colors= None, quantity= 1, comments= ..., link= None, category=...>`
-
-2. **Weather Data:** Current and upcoming weather conditions for the event location, formatted as a table:
-   ```
-   +------------+-------+---------+---------------+---------------+--------------+
-   |    Date    |  Time | Weather | Min Temp (°C) | Max Temp (°C) | Humidity (%) |
-   +------------+-------+---------+---------------+---------------+--------------+
-   | 2024-08-07 | 20:00 |  Clouds |       19      |       21      |      88      |
-   | 2024-08-07 | 23:00 |   Rain  |       20      |       21      |      84      |
-   | 2024-08-08 | 02:00 |   Rain  |       20      |       21      |      82      |
-   ```
-
-3. **Event Details:** Information about the occasion, including the location, time of day, planned activities, and any specific dress code or style preferences, formatted as a concise description:
-   `Chill dinner hangout with friends in San Jose, prefer comfortable clothes.`
-
-4. **Style Preferences:** Explicit statements from the user about their personal style preferences, each formatted as:
-   `<UserStylePreference id=2, preference=I wear ... only for fancy dinners>`
-
-
-**Outfit Generation Process:**
-
-1. **Deeply Analyze User Style:** 
-    - Go beyond simply identifying basic style categories (e.g., classic, bohemian).  
-    - Deduce the user's preferred colors, fabrics, patterns, silhouettes, and brands based on their wardrobe inventory.
-    - Pay close attention to item quantities, comments, and any provided links to understand their individual taste and potential favorite items.
-    - Factor in the user's explicit style preferences to personalize the recommendations.
-
-2. **Contextualize Event Requirements:**
-    - Thoroughly analyze the event details to determine the appropriate level of formality and practicality. 
-    - Consider the location, time of day, and activities to ensure the outfits are suitable and comfortable.
-
-3. **Prioritize Weather Appropriateness:**
-    - Carefully consider the weather data to ensure the outfits are comfortable and functional.
-    - Suggest layering options for fluctuating temperatures or unpredictable weather.
-    - Prioritize weather-resistant materials and appropriate footwear for rain or snow.
-
-4. **Craft Cohesive and Stylish Outfits:**
-    - Create well-balanced outfit combinations that showcase the user's personal style while adhering to event requirements and weather conditions.
-    -  Consider color coordination, visual interest through texture and pattern mixing, and overall silhouette.
-
-5. **Maximize Wardrobe Usage:**
-    - Demonstrate the versatility of the user's existing wardrobe by showcasing multiple ways to style the same pieces for different occasions or aesthetics.
-    - Aim to generate at least 4 diverse outfit suggestions, if possible, to provide a range of options.
-
-6. **Complete the Look with Essentials:**
-    - Don't forget to include essential items like footwear, accessories (jewelry, bags, belts, etc.), and outerwear as needed. These details are crucial for a polished and complete look.
-
-7. **Identify Wardrobe Gaps:**
-    - Act as a true stylist by identifying any missing items that would elevate the user's wardrobe and complement their existing pieces.
-    - Offer specific product recommendations with justifications, considering the user's style and needs.
-    - For example: `"A black leather jacket would add a chic edge to your wardrobe and can be dressed up or down."`
-
-**Output:**
-
-You will provide a JSON object containing a list of outfit suggestions, following the structure below.
-
-**JSON Structure:**
-
-```json
-{
-  "outfits": [
-    {
-      "outfitId": 1,
-      "description": "Casual summer look with denim shorts and a white t-shirt",
-      "pieces": [
-        {
-          "itemId": 1,
-          "reason": "Base Layer"
-        },
-        {
-          "itemId": 2,
-          "reason": "Bottom Piece"
-        }
-      ],
-      "imagePrompt": "A fashion mood board containing a white t-shirt, denim shorts, and white sneakers",
-      "style": "...", 
-      "colorPalette": [
-        "#ffffff", // if there are many colors for an item, mention the one which works best with the outfit.
-        "#3B5998" // Blue for denim
-      ],
-      "missing": [
-        {
-          "name": "White Sneakers",
-          "category": "Footwear",
-          "reason": "Need comfortable sneakers for walking"
-        },
-        {
-          "name": "Sunglasses",
-          "category": "Accessories",
-          "reason": "To protect eyes from the sun"
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Important Notes for Output:**
-
-- **imagePrompt:**  Construct the `imagePrompt` string to accurately represent the outfit for image generation purposes. Be descriptive and include all key pieces and their colors.
-- **colorPalette:** Extract the main colors of the chosen pieces for the `colorPalette`. If an item has multiple colors, choose the most prominent one that works well with the outfit. You can create different outfits featuring the same item in different colors to showcase versatility.
-- **Ensure Completeness and Accuracy:** Double-check the output to ensure all outfit details are complete, accurate, and well-formatted.
-```
-
-User Input:
 """
 
 TEST_OUTFIT = """
@@ -551,69 +326,1593 @@ TEST_OUTFIT = """
   "outfits": [
     {
       "outfitId": 1,
-      "description": "A sophisticated and put-together look for a fine dining experience.",
+      "description": "Comfortable hiking outfit for a warm day",
       "pieces": [
         {
-          "itemId": 30,
-          "reason": "Provides a touch of relaxed elegance appropriate for the event."
+          "itemId": 6,
+          "reason": "Moisture-wicking T-shirt for a hike"
         },
         {
-          "itemId": 32,
-          "reason": "Dark wash jeans offer a polished look."
+          "itemId": 10,
+          "reason": "Lightweight and stretchy jogger pants"
+        },
+        {
+          "itemId": 14,
+          "reason": "Comfortable and supportive hiking shoes"
         }
       ],
-      "imagePrompt": "A fashion mood board with a washed green linen shirt, dark blue jeans, brown leather belt, and brown suede Chelsea boots.",
-      "style": "...",
+      "imagePrompt": "A man hiking in a heather navy T-shirt, olive green jogger pants, and terracotta hiking shoes",
+      "style": "Activewear",
       "colorPalette": [
-        "#557744",
-        "#223344",
-        "#663300"
+        "#3B5998",
+        "#556B2F",
+        "#E97451"
       ],
       "missing": [
         {
-          "name": "Brown Leather Belt",
+          "name": "Hiking Backpack",
           "category": "Accessories",
-          "reason": "Complements the earth tones and adds a touch of sophistication."
-        },
-        {
-          "name": "Brown Suede Chelsea Boots",
-          "category": "Footwear",
-          "reason": "Elevates the look while maintaining comfort."
+          "reason": "To carry water and essentials"
         }
       ]
     },
     {
       "outfitId": 2,
-      "description": "A more modern and sleek alternative for a fine dining date.",
-      "items": [
+      "description": "Casual hiking look with a comfortable T-shirt and denim jeans",
+      "pieces": [
         {
-          "itemId": 12,
-          "reason": "A black Pima cotton t-shirt is a stylish base layer."
+          "itemId": 2,
+          "reason": "Lightweight and breathable T-shirt"
         },
         {
-          "itemId": 26,
-          "reason": "Dark grey straight pants offer a polished and modern aesthetic."
+          "itemId": 11,
+          "reason": "Durable denim jeans for hiking"
+        },
+        {
+          "itemId": 14,
+          "reason": "Sturdy hiking shoes"
         }
       ],
-      "imagePrompt": "A fashion mood board with a black Pima cotton t-shirt, dark grey straight pants, black leather minimalist sneakers, and a black leather watch.",
-      "style": "...",
+      "imagePrompt": "A man wearing an olive green T-shirt, dark wash denim jeans, and terracotta hiking shoes",
+      "style": "Casual",
       "colorPalette": [
-        "#000000",
-        "#333333"
+        "#556B2F",
+        "#3B5998",
+        "#E97451"
       ],
       "missing": [
         {
-          "name": "Black Leather Minimalist Sneakers",
-          "category": "Footwear",
-          "reason": "Provides a modern contrast to the sophisticated outfit."
-        },
-        {
-          "name": "Black Leather Watch",
+          "name": "Baseball Cap",
           "category": "Accessories",
-          "reason": "Adds a subtle touch of sophistication."
+          "reason": "To protect from the sun"
         }
       ]
+    },
+    {
+      "outfitId": 3,
+      "description": "A slightly dressier option for hiking with a polo shirt and beige pants",
+      "pieces": [
+        {
+          "itemId": 1,
+          "reason": "Polo shirt for a slightly more polished look"
+        },
+        {
+          "itemId": 12,
+          "reason": "Comfortable and breathable cotton pants"
+        },
+        {
+          "itemId": 14,
+          "reason": "Supportive hiking shoes"
+        }
+      ],
+      "imagePrompt": "A man wearing a navy blue polo shirt, beige relaxed ankle pants, and terracotta hiking shoes",
+      "style": "Smart Casual",
+      "colorPalette": [
+        "#3B5998",
+        "#F5F5DC",
+        "#E97451"
+      ],
+      "missing": []
+    },
+    {
+      "outfitId": 4,
+      "description": "Layering option for cooler weather with a fleece hoodie",
+      "pieces": [
+        {
+          "itemId": 3,
+          "reason": "Base layer for warmth"
+        },
+        {
+          "itemId": 8,
+          "reason": "Fleece hoodie for added warmth"
+        },
+        {
+          "itemId": 10,
+          "reason": "Lightweight and breathable jogger pants"
+        },
+        {
+          "itemId": 14,
+          "reason": "Sturdy hiking shoes"
+        }
+      ],
+      "imagePrompt": "A man wearing a black T-shirt, a brick red fleece hoodie, olive green jogger pants, and terracotta hiking shoes",
+      "style": "Activewear",
+      "colorPalette": [
+        "#000000",
+        "#B22222",
+        "#556B2F",
+        "#E97451"
+      ],
+      "missing": []
     }
   ]
 }
 """
+
+TEST_WEATHER_FORECAST="""
+{
+  "cod": "200",
+  "message": 0,
+  "cnt": 40,
+  "list": [
+    {
+      "dt": 1723334400,
+      "main": {
+        "temp": 28.96,
+        "feels_like": 29.15,
+        "temp_min": 28.17,
+        "temp_max": 28.96,
+        "pressure": 1012,
+        "sea_level": 1012,
+        "grnd_level": 1012,
+        "humidity": 46,
+        "temp_kf": 0.79
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 56
+      },
+      "wind": {
+        "speed": 4.93,
+        "deg": 264,
+        "gust": 6.71
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-11 00:00:00"
+    },
+    {
+      "dt": 1723345200,
+      "main": {
+        "temp": 27.01,
+        "feels_like": 27.37,
+        "temp_min": 25.84,
+        "temp_max": 27.01,
+        "pressure": 1013,
+        "sea_level": 1013,
+        "grnd_level": 1012,
+        "humidity": 49,
+        "temp_kf": 1.17
+      },
+      "weather": [
+        {
+          "id": 802,
+          "main": "Clouds",
+          "description": "scattered clouds",
+          "icon": "03n"
+        }
+      ],
+      "clouds": {
+        "all": 48
+      },
+      "wind": {
+        "speed": 2.95,
+        "deg": 284,
+        "gust": 6.33
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-11 03:00:00"
+    },
+    {
+      "dt": 1723356000,
+      "main": {
+        "temp": 23.5,
+        "feels_like": 23.32,
+        "temp_min": 23.5,
+        "temp_max": 23.5,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 54,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02n"
+        }
+      ],
+      "clouds": {
+        "all": 20
+      },
+      "wind": {
+        "speed": 3.79,
+        "deg": 337,
+        "gust": 6.34
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-11 06:00:00"
+    },
+    {
+      "dt": 1723366800,
+      "main": {
+        "temp": 21.76,
+        "feels_like": 21.38,
+        "temp_min": 21.76,
+        "temp_max": 21.76,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 53,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 68
+      },
+      "wind": {
+        "speed": 3.97,
+        "deg": 354,
+        "gust": 6.54
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-11 09:00:00"
+    },
+    {
+      "dt": 1723377600,
+      "main": {
+        "temp": 22.41,
+        "feels_like": 21.96,
+        "temp_min": 22.41,
+        "temp_max": 22.41,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1015,
+        "humidity": 48,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 51
+      },
+      "wind": {
+        "speed": 2.2,
+        "deg": 343,
+        "gust": 2.79
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-11 12:00:00"
+    },
+    {
+      "dt": 1723388400,
+      "main": {
+        "temp": 25.74,
+        "feels_like": 25.39,
+        "temp_min": 25.74,
+        "temp_max": 25.74,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1015,
+        "humidity": 39,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 100
+      },
+      "wind": {
+        "speed": 2.62,
+        "deg": 254,
+        "gust": 3.68
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-11 15:00:00"
+    },
+    {
+      "dt": 1723399200,
+      "main": {
+        "temp": 28.27,
+        "feels_like": 27.57,
+        "temp_min": 28.27,
+        "temp_max": 28.27,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 35,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 90
+      },
+      "wind": {
+        "speed": 4.49,
+        "deg": 222,
+        "gust": 6.92
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-11 18:00:00"
+    },
+    {
+      "dt": 1723410000,
+      "main": {
+        "temp": 27.87,
+        "feels_like": 27.62,
+        "temp_min": 27.87,
+        "temp_max": 27.87,
+        "pressure": 1013,
+        "sea_level": 1013,
+        "grnd_level": 1012,
+        "humidity": 41,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01d"
+        }
+      ],
+      "clouds": {
+        "all": 8
+      },
+      "wind": {
+        "speed": 5.01,
+        "deg": 205,
+        "gust": 7.5
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-11 21:00:00"
+    },
+    {
+      "dt": 1723420800,
+      "main": {
+        "temp": 26.19,
+        "feels_like": 26.19,
+        "temp_min": 26.19,
+        "temp_max": 26.19,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1012,
+        "humidity": 43,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "clouds": {
+        "all": 7
+      },
+      "wind": {
+        "speed": 4.65,
+        "deg": 260,
+        "gust": 6.34
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-12 00:00:00"
+    },
+    {
+      "dt": 1723431600,
+      "main": {
+        "temp": 23.88,
+        "feels_like": 23.71,
+        "temp_min": 23.88,
+        "temp_max": 23.88,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 53,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "clouds": {
+        "all": 6
+      },
+      "wind": {
+        "speed": 4.04,
+        "deg": 296,
+        "gust": 6.76
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-12 03:00:00"
+    },
+    {
+      "dt": 1723442400,
+      "main": {
+        "temp": 22.19,
+        "feels_like": 21.82,
+        "temp_min": 22.19,
+        "temp_max": 22.19,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 52,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "clouds": {
+        "all": 4
+      },
+      "wind": {
+        "speed": 3.38,
+        "deg": 314,
+        "gust": 5.83
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-12 06:00:00"
+    },
+    {
+      "dt": 1723453200,
+      "main": {
+        "temp": 21.16,
+        "feels_like": 20.77,
+        "temp_min": 21.16,
+        "temp_max": 21.16,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 55,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 65
+      },
+      "wind": {
+        "speed": 2.55,
+        "deg": 296,
+        "gust": 4.07
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-12 09:00:00"
+    },
+    {
+      "dt": 1723464000,
+      "main": {
+        "temp": 21.84,
+        "feels_like": 21.46,
+        "temp_min": 21.84,
+        "temp_max": 21.84,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 53,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 78
+      },
+      "wind": {
+        "speed": 3.22,
+        "deg": 278,
+        "gust": 4.8
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-12 12:00:00"
+    },
+    {
+      "dt": 1723474800,
+      "main": {
+        "temp": 25.38,
+        "feels_like": 25.1,
+        "temp_min": 25.38,
+        "temp_max": 25.38,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 43,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02d"
+        }
+      ],
+      "clouds": {
+        "all": 12
+      },
+      "wind": {
+        "speed": 5.32,
+        "deg": 269,
+        "gust": 7.38
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-12 15:00:00"
+    },
+    {
+      "dt": 1723485600,
+      "main": {
+        "temp": 27.41,
+        "feels_like": 27.01,
+        "temp_min": 27.41,
+        "temp_max": 27.41,
+        "pressure": 1013,
+        "sea_level": 1013,
+        "grnd_level": 1012,
+        "humidity": 37,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 802,
+          "main": "Clouds",
+          "description": "scattered clouds",
+          "icon": "03d"
+        }
+      ],
+      "clouds": {
+        "all": 27
+      },
+      "wind": {
+        "speed": 5.95,
+        "deg": 265,
+        "gust": 8.21
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-12 18:00:00"
+    },
+    {
+      "dt": 1723496400,
+      "main": {
+        "temp": 27.19,
+        "feels_like": 26.95,
+        "temp_min": 27.19,
+        "temp_max": 27.19,
+        "pressure": 1013,
+        "sea_level": 1013,
+        "grnd_level": 1011,
+        "humidity": 39,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 85
+      },
+      "wind": {
+        "speed": 6.01,
+        "deg": 303,
+        "gust": 8.32
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-12 21:00:00"
+    },
+    {
+      "dt": 1723507200,
+      "main": {
+        "temp": 24.41,
+        "feels_like": 24.24,
+        "temp_min": 24.41,
+        "temp_max": 24.41,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 51,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 57
+      },
+      "wind": {
+        "speed": 5.46,
+        "deg": 304,
+        "gust": 8.29
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-13 00:00:00"
+    },
+    {
+      "dt": 1723518000,
+      "main": {
+        "temp": 21.5,
+        "feels_like": 21.25,
+        "temp_min": 21.5,
+        "temp_max": 21.5,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1014,
+        "humidity": 59,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "clouds": {
+        "all": 2
+      },
+      "wind": {
+        "speed": 5.46,
+        "deg": 323,
+        "gust": 8.75
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-13 03:00:00"
+    },
+    {
+      "dt": 1723528800,
+      "main": {
+        "temp": 20.32,
+        "feels_like": 19.95,
+        "temp_min": 20.32,
+        "temp_max": 20.32,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1014,
+        "humidity": 59,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01n"
+        }
+      ],
+      "clouds": {
+        "all": 7
+      },
+      "wind": {
+        "speed": 3.5,
+        "deg": 321,
+        "gust": 4.39
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-13 06:00:00"
+    },
+    {
+      "dt": 1723539600,
+      "main": {
+        "temp": 19.53,
+        "feels_like": 19.16,
+        "temp_min": 19.53,
+        "temp_max": 19.53,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 62,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 65
+      },
+      "wind": {
+        "speed": 3.78,
+        "deg": 339,
+        "gust": 4.79
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-13 09:00:00"
+    },
+    {
+      "dt": 1723550400,
+      "main": {
+        "temp": 20.23,
+        "feels_like": 19.82,
+        "temp_min": 20.23,
+        "temp_max": 20.23,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1015,
+        "humidity": 58,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 83
+      },
+      "wind": {
+        "speed": 3.27,
+        "deg": 318,
+        "gust": 4.75
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-13 12:00:00"
+    },
+    {
+      "dt": 1723561200,
+      "main": {
+        "temp": 24.2,
+        "feels_like": 23.77,
+        "temp_min": 24.2,
+        "temp_max": 24.2,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1015,
+        "humidity": 42,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 98
+      },
+      "wind": {
+        "speed": 3.08,
+        "deg": 332,
+        "gust": 4.14
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-13 15:00:00"
+    },
+    {
+      "dt": 1723572000,
+      "main": {
+        "temp": 27.36,
+        "feels_like": 26.92,
+        "temp_min": 27.36,
+        "temp_max": 27.36,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 36,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 99
+      },
+      "wind": {
+        "speed": 2.46,
+        "deg": 298,
+        "gust": 3.07
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-13 18:00:00"
+    },
+    {
+      "dt": 1723582800,
+      "main": {
+        "temp": 27.12,
+        "feels_like": 26.9,
+        "temp_min": 27.12,
+        "temp_max": 27.12,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1012,
+        "humidity": 39,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 100
+      },
+      "wind": {
+        "speed": 2.41,
+        "deg": 282,
+        "gust": 3.42
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-13 21:00:00"
+    },
+    {
+      "dt": 1723593600,
+      "main": {
+        "temp": 26.49,
+        "feels_like": 26.49,
+        "temp_min": 26.49,
+        "temp_max": 26.49,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1012,
+        "humidity": 41,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 100
+      },
+      "wind": {
+        "speed": 1.74,
+        "deg": 287,
+        "gust": 3.42
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-14 00:00:00"
+    },
+    {
+      "dt": 1723604400,
+      "main": {
+        "temp": 25.01,
+        "feels_like": 24.85,
+        "temp_min": 25.01,
+        "temp_max": 25.01,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 49,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 98
+      },
+      "wind": {
+        "speed": 2.48,
+        "deg": 280,
+        "gust": 3.34
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-14 03:00:00"
+    },
+    {
+      "dt": 1723615200,
+      "main": {
+        "temp": 24.13,
+        "feels_like": 23.96,
+        "temp_min": 24.13,
+        "temp_max": 24.13,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 52,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 91
+      },
+      "wind": {
+        "speed": 2.48,
+        "deg": 10,
+        "gust": 4.62
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-14 06:00:00"
+    },
+    {
+      "dt": 1723626000,
+      "main": {
+        "temp": 22.71,
+        "feels_like": 22.55,
+        "temp_min": 22.71,
+        "temp_max": 22.71,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 58,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02n"
+        }
+      ],
+      "clouds": {
+        "all": 24
+      },
+      "wind": {
+        "speed": 2.75,
+        "deg": 356,
+        "gust": 4.75
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-14 09:00:00"
+    },
+    {
+      "dt": 1723636800,
+      "main": {
+        "temp": 23.1,
+        "feels_like": 22.88,
+        "temp_min": 23.1,
+        "temp_max": 23.1,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 54,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02d"
+        }
+      ],
+      "clouds": {
+        "all": 19
+      },
+      "wind": {
+        "speed": 3.32,
+        "deg": 7,
+        "gust": 5.22
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-14 12:00:00"
+    },
+    {
+      "dt": 1723647600,
+      "main": {
+        "temp": 27.03,
+        "feels_like": 26.94,
+        "temp_min": 27.03,
+        "temp_max": 27.03,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 41,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 800,
+          "main": "Clear",
+          "description": "clear sky",
+          "icon": "01d"
+        }
+      ],
+      "clouds": {
+        "all": 7
+      },
+      "wind": {
+        "speed": 3.19,
+        "deg": 14,
+        "gust": 3.27
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-14 15:00:00"
+    },
+    {
+      "dt": 1723658400,
+      "main": {
+        "temp": 29.27,
+        "feels_like": 28.45,
+        "temp_min": 29.27,
+        "temp_max": 29.27,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1013,
+        "humidity": 35,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 802,
+          "main": "Clouds",
+          "description": "scattered clouds",
+          "icon": "03d"
+        }
+      ],
+      "clouds": {
+        "all": 33
+      },
+      "wind": {
+        "speed": 0.85,
+        "deg": 78,
+        "gust": 2.56
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-14 18:00:00"
+    },
+    {
+      "dt": 1723669200,
+      "main": {
+        "temp": 27.69,
+        "feels_like": 27.4,
+        "temp_min": 27.69,
+        "temp_max": 27.69,
+        "pressure": 1014,
+        "sea_level": 1014,
+        "grnd_level": 1012,
+        "humidity": 40,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 93
+      },
+      "wind": {
+        "speed": 2.88,
+        "deg": 183,
+        "gust": 2.52
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-14 21:00:00"
+    },
+    {
+      "dt": 1723680000,
+      "main": {
+        "temp": 26.74,
+        "feels_like": 26.92,
+        "temp_min": 26.74,
+        "temp_max": 26.74,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1013,
+        "humidity": 45,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04n"
+        }
+      ],
+      "clouds": {
+        "all": 93
+      },
+      "wind": {
+        "speed": 1.65,
+        "deg": 140,
+        "gust": 2.11
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-15 00:00:00"
+    },
+    {
+      "dt": 1723690800,
+      "main": {
+        "temp": 25.13,
+        "feels_like": 25.06,
+        "temp_min": 25.13,
+        "temp_max": 25.13,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1014,
+        "humidity": 52,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02n"
+        }
+      ],
+      "clouds": {
+        "all": 13
+      },
+      "wind": {
+        "speed": 1.54,
+        "deg": 9,
+        "gust": 3.52
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-15 03:00:00"
+    },
+    {
+      "dt": 1723701600,
+      "main": {
+        "temp": 24,
+        "feels_like": 23.87,
+        "temp_min": 24,
+        "temp_max": 24,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 54,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 801,
+          "main": "Clouds",
+          "description": "few clouds",
+          "icon": "02n"
+        }
+      ],
+      "clouds": {
+        "all": 16
+      },
+      "wind": {
+        "speed": 2.59,
+        "deg": 21,
+        "gust": 5.07
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-15 06:00:00"
+    },
+    {
+      "dt": 1723712400,
+      "main": {
+        "temp": 22.96,
+        "feels_like": 22.83,
+        "temp_min": 22.96,
+        "temp_max": 22.96,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1014,
+        "humidity": 58,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10n"
+        }
+      ],
+      "clouds": {
+        "all": 60
+      },
+      "wind": {
+        "speed": 2.69,
+        "deg": 15,
+        "gust": 4.78
+      },
+      "visibility": 10000,
+      "pop": 0.2,
+      "rain": {
+        "3h": 0.11
+      },
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2024-08-15 09:00:00"
+    },
+    {
+      "dt": 1723723200,
+      "main": {
+        "temp": 21.95,
+        "feels_like": 21.79,
+        "temp_min": 21.95,
+        "temp_max": 21.95,
+        "pressure": 1017,
+        "sea_level": 1017,
+        "grnd_level": 1016,
+        "humidity": 61,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain",
+          "icon": "10d"
+        }
+      ],
+      "clouds": {
+        "all": 61
+      },
+      "wind": {
+        "speed": 3.61,
+        "deg": 21,
+        "gust": 4.81
+      },
+      "visibility": 10000,
+      "pop": 0.27,
+      "rain": {
+        "3h": 0.53
+      },
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-15 12:00:00"
+    },
+    {
+      "dt": 1723734000,
+      "main": {
+        "temp": 26.47,
+        "feels_like": 26.47,
+        "temp_min": 26.47,
+        "temp_max": 26.47,
+        "pressure": 1017,
+        "sea_level": 1017,
+        "grnd_level": 1016,
+        "humidity": 45,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 61
+      },
+      "wind": {
+        "speed": 2.19,
+        "deg": 34,
+        "gust": 2.83
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-15 15:00:00"
+    },
+    {
+      "dt": 1723744800,
+      "main": {
+        "temp": 29.13,
+        "feels_like": 28.48,
+        "temp_min": 29.13,
+        "temp_max": 29.13,
+        "pressure": 1016,
+        "sea_level": 1016,
+        "grnd_level": 1015,
+        "humidity": 37,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 803,
+          "main": "Clouds",
+          "description": "broken clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 74
+      },
+      "wind": {
+        "speed": 1.91,
+        "deg": 139,
+        "gust": 2.56
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-15 18:00:00"
+    },
+    {
+      "dt": 1723755600,
+      "main": {
+        "temp": 26.32,
+        "feels_like": 26.32,
+        "temp_min": 26.32,
+        "temp_max": 26.32,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 1014,
+        "humidity": 48,
+        "temp_kf": 0
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "clouds": {
+        "all": 100
+      },
+      "wind": {
+        "speed": 4.14,
+        "deg": 156,
+        "gust": 3.73
+      },
+      "visibility": 10000,
+      "pop": 0,
+      "sys": {
+        "pod": "d"
+      },
+      "dt_txt": "2024-08-15 21:00:00"
+    }
+  ],
+  "city": {
+    "id": 5128581,
+    "name": "New York",
+    "coord": {
+      "lat": 40.7127,
+      "lon": -74.006
+    },
+    "country": "US",
+    "population": 8175133,
+    "timezone": -14400,
+    "sunrise": 1723284116,
+    "sunset": 1723334449
+  }
+}"""
