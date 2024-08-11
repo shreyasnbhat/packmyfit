@@ -42,7 +42,25 @@ PackMyFit is your one-stop solution for managing your wardrobe, creating perfect
    pip3 install -r requirements.txt
    ```
 
-## Test Data
+## Configuration
+
+* **API Keys:** Manage your API keys in `api_keys.py`.
+* **Feature Flags:** Control application behavior using the flags in `flags.py`.
+
+
+## API Key Setup
+* **Weather Data:**
+    * PackMyFit can obtain weather forecast data for your trips & events, but this will require an OpenWeather API key.
+    * If an OpenWeather API Key is NOT available, dummy weather data will be used. Set `WEATHER_TESTING=True` in `flags.py`.
+    * If you have an OpenWeather API Key, set `OPEN_WEATHER_API_KEY` in `api_keys.py` & set `WEATHER_TESTING=False` in `flags.py` to enable real-time weather data features.
+
+* **AI Features (Packing & Itinerary):**
+    * PackMyFit is an Gemini powered application and requires a Google AI Studio API Key for the AI Generated Checklists, Itineraries, Outfits etc.
+    * If a Gemini API Key is NOT available, dummy packing and itinerary information will be displayed. Set `LLM_TESTING=True` in `flags.py`.
+    * If you have a Gemini API Key set `GEMINI_API_KEY` in `api_keys.py` & set `LLM_TESTING=False` in `flags.py`.
+
+
+## Testing Data
 
 The `testdata` directory includes sample data for testing the AI features:
 
@@ -53,14 +71,13 @@ The `testdata` directory includes sample data for testing the AI features:
 
 ```
 testdata/
-    - user_1_item_1/
-    - user_1_item_2/
+    - user_1_item_1/   # Stores the testdata images for User ID: 1, Item ID: 1
+    - user_1_item_2/   # Stores the testdata images for User ID: 1, Item ID: 2
     - user_1_item_3/
     - ....
     - item_repository.csv
     - user_preferences.txt
 ```
-
 
 ## Re-Initializing the SQL Alchemy Database
 
@@ -81,14 +98,6 @@ A default user account is provided for testing:
 
 A sample trip from San Jose to New York (August 11, 2024 - August 15, 2024) is pre-configured. You may also add/remove trips as needed.
 
-* **Weather Data:**
-    * If an OpenWeather API Key is NOT available, dummy weather data will be used (set `WEATHER_TESTING=True` in `flags.py`).
-    * To use the OpenWeather API, obtain an OpenWeather API key and set `OPEN_WEATHER_API_KEY` in `api_keys.py` (set `WEATHER_TESTING=False` in `flags.py`).
-
-* **AI Features (Packing & Itinerary):**
-    * If a Gemini API Key is NOT available, dummy packing and itinerary information will be displayed (set `LLM_TESTING=True` in `flags.py`).
-    * To enable the AI features, obtain a Gemini API Key and set `GEMINI_API_KEY` in `api_keys.py` (set `LLM_TESTING=False` in `flags.py`).
-
 * **Generating Itinerary & Checklist:**
     * Click the "Generate Itinerary" button to create an itinerary for New York.
     * Click the "Generate Checklist" button to create a packing checklist referencing your wardrobe items. Generated checklists contain sub-checklists for each bag such as Carry On Bag, Backpack etc. Each sub-checklist references the items you own and provides deep links to the digital closet.
@@ -104,11 +113,6 @@ A sample Hiking event in San Jose (August 11, 2024) is pre-configured. You may a
 
 * **Weather Integration:**
     * Outfit recommendations take into account real-time weather conditions to ensure you're dressed appropriately.
-
-## Configuration
-
-* **API Keys:** Manage your API keys in `api_keys.py`.
-* **Feature Flags:** Control application behavior using the flags in `flags.py`.
 
 ## Contributing
 
