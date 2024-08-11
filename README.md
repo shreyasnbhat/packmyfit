@@ -99,7 +99,9 @@ A default user account is provided for testing:
 A sample trip from San Jose to New York (August 11, 2024 - August 15, 2024) is pre-configured. You may also add/remove trips as needed.
 
 * **Generating Itinerary & Checklist:**
-    * Click the "Generate Itinerary" button to create an itinerary for New York.
+    * A Gemini API key is required for this feature.
+    * PackMyFit leverages your digital closet, packing preferences, weather data, trip description, date, time, itinerary to provide personalized and detailed checklists. 
+    * Click the "Generate Itinerary" button to create an itinerary.
     * Click the "Generate Checklist" button to create a packing checklist referencing your wardrobe items. Generated checklists contain sub-checklists for each bag such as Carry On Bag, Backpack etc. Each sub-checklist references the items you own and provides deep links to the digital closet.
 
 ## Creating an Outfit
@@ -107,12 +109,9 @@ A sample trip from San Jose to New York (August 11, 2024 - August 15, 2024) is p
 A sample Hiking event in San Jose (August 11, 2024) is pre-configured. You may also add/remove events as needed.
 
 * **AI-Powered Outfit Recommendations:**
-    * PackMyFit leverages your digital closet, weather data, event description, time, and date to provide various outfit suggestions.
-    * Click "Generate Outfits" to obtain options. The application will also suggest items you might want to add to your digital closet to complete an outfit.
     * A Gemini API key is required for this feature.
-
-* **Weather Integration:**
-    * Outfit recommendations take into account real-time weather conditions to ensure you're dressed appropriately.
+    * PackMyFit leverages your digital closet, weather data, event description, time, and date to provide various outfit suggestions.
+    * Click "Generate Outfits" to obtain outfit options. The application will also suggest items you might want to add to your digital closet to complete an outfit.
 
 ## Contributing
 
