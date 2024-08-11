@@ -1,4 +1,3 @@
-```markdown
 # PackMyFit: Your AI-Powered Personal Stylist and Packing Assistant
 
 PackMyFit is your one-stop solution for managing your wardrobe, creating perfect packing lists, and discovering stunning outfit combinations for any occasion. This web application, written in Python using Flask and SQL Alchemy, leverages the power of Gemini APIs via Google AI Studio and the Open Weather API for weather-aware recommendations.
