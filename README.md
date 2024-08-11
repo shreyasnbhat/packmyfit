@@ -94,9 +94,18 @@ A default user account is provided for testing:
 * **Username:** `testuser`
 * **Password:** `abcd1234`
 
-## Creating an Itinerary
+## Adding an Item to Digital Closet
 
-A sample trip from San Jose to New York (August 11, 2024 - August 15, 2024) is pre-configured. You may also add/remove trips as needed.
+15 dummy items accross different categories are pre-configured. You may add new items if you'd like that. Navigate to the Items tab and click on the plus icon on the bottom right corner to add a new item, add details about the items and photos if you'd like.
+
+* **Generating Item Metadata:**
+    * A Gemini API key is required for this feature.
+    * PackMyFit can upload the images provided by you and analyze them to figure out care instructions, item color, material, brand name etc.
+    * Click the "Analyze Images" button to perform this analysis.
+
+## Creating a Checklist & Itinerary
+
+A dummy trip from San Jose to New York (August 11, 2024 - August 15, 2024) is pre-configured. You may also add/remove trips as needed.
 
 * **Generating Itinerary & Checklist:**
     * A Gemini API key is required for this feature.
