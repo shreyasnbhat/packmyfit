@@ -1,7 +1,7 @@
 __pycache__/*
 Item Repository/*
 items/images/*
-static/*
+static/items/*
 shreyas_testdata/*
 templates/.DS_Store
 .DS_Store
